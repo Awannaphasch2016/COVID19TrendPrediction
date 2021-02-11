@@ -43,11 +43,6 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
     return agg.values
 
 
-# split a univariate dataset into train/test sets
-def train_test_split(data, n_test):
-    return data[:-n_test, :], data[-n_test:, :]
-
-
 # fit an xgboost model and make a one step prediction
 def xgboost_forecast(train, testX):
     # transform list into array
@@ -62,32 +57,32 @@ def xgboost_forecast(train, testX):
     return yhat[0]
 
 
-# walk-forward validation for univariate data
-def walk_forward_validation(data, n_test):
-    predictions = list()
-    # split dataset
-    train, test = train_test_split(data, n_test)
-    # seed history with training dataset
-    history = [x for x in train]
-    # step over each time-step in the test set
-    for i in range(len(test)):
-        # split test row into input and output columns
-        testX, testy = test[i, :-1], test[i, -1]
-        # fit model on history and make a prediction
-        yhat = xgboost_forecast(history, testX)
-        # store forecast in list of predictions
-        predictions.append(yhat)
-        # add actual observation to history for the next loop
-        history.append(test[i])
-        # summarize progress
-        print(">expected=%.1f, predicted=%.1f" % (testy, yhat))
-    # estimate prediction error
-    # error = mean_absolute_error(test[:, -1], predictions)
-    mse_val = mse(test[:, -1], predictions)
-    mape_val = mape(test[:, -1], predictions)
-    rmse_val = rmse(test[:, -1], predictions)
-    r2_val = r2score(test[:, -1], predictions)
-    return mse_val, mape_val, rmse_val, r2_val, test[:, -1], predictions
+# # walk-forward validation for univariate data
+# def walk_forward_validation(data, n_test):
+#     predictions = list()
+#     # split dataset
+#     train, test = train_test_split(data, n_test)
+#     # seed history with training dataset
+#     history = [x for x in train]
+#     # step over each time-step in the test set
+#     for i in range(len(test)):
+#         # split test row into input and output columns
+#         testX, testy = test[i, :-1], test[i, -1]
+#         # fit model on history and make a prediction
+#         yhat = xgboost_forecast(history, testX)
+#         # store forecast in list of predictions
+#         predictions.append(yhat)
+#         # add actual observation to history for the next loop
+#         history.append(test[i])
+#         # summarize progress
+#         print(">expected=%.1f, predicted=%.1f" % (testy, yhat))
+#     # estimate prediction error
+#     # error = mean_absolute_error(test[:, -1], predictions)
+#     mse_val = mse(test[:, -1], predictions)
+#     mape_val = mape(test[:, -1], predictions)
+#     rmse_val = rmse(test[:, -1], predictions)
+#     r2_val = r2score(test[:, -1], predictions)
+#     return mse_val, mape_val, rmse_val, r2_val, test[:, -1], predictions
 
 
 # # load the dataset
@@ -100,7 +95,13 @@ data = series_to_supervised(case_by_date_florida_np, n_in=6)
 # evaluate
 
 mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation(
-    data, round(case_by_date_florida_np.shape[0] * 0.15)
+    data, round(case_by_date_florida_np.shape[0] * 0.15), xgboost_forecast
+)
+
+frame_pred_val(
+    y.reshape(-1),
+    array(yhat).reshape(-1),
+    save_path=BASEPATH + "/Outputs/Models/Performances/Baselines/lstm_pred_val.csv",
 )
 
 plot(y, yhat, save_path=BASEPATH + "/Outputs/Images/Xgboost/forecasting.jpg")
@@ -112,6 +113,14 @@ plot(y, yhat, save_path=BASEPATH + "/Outputs/Images/Xgboost/forecasting.jpg")
 # # plt.savefig(BASEPATH / pathlib.Path("Outputs/Images/Xgboost/forecasting.jpg"))
 # pyplot.show()
 
-DataFrame(
-    [[mse_val, mape_val, rmse_val, r2_val]], columns=["mape", "mse", "rmse", "r2score"]
-).to_csv(BASEPATH + "/Outputs/Models/Performances/Baselines/xgboost_performance.csv")
+# DataFrame(
+#     [[mse_val, mape_val, rmse_val, r2_val]], columns=["mape", "mse", "rmse", "r2score"]
+# ).to_csv(BASEPATH + "/Outputs/Models/Performances/Baselines/xgboost_performance.csv")
+frame_performance(
+    mse_val,
+    mape_val,
+    rmse_val,
+    r2_val,
+    save_path=BASEPATH
+    + "/Outputs/Models/Performances/Baselines/xgboost_performance.csv",
+)

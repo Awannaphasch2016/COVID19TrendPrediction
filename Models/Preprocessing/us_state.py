@@ -21,6 +21,13 @@ df_by_date = pd.DataFrame(
     .sort_values()
     .reset_index()
 )
+
+all_states = df_by_date["state"].unique()
+
+# # get cases for each states
+# for i for all_states:
+#     case_by_date_per_states = df_by_date[df_by_date["state"] == i]
+
 case_by_date_florida = df_by_date[df_by_date["state"] == "Florida"]
 # print(case_by_date_florida)
 # print(case_by_date_florida.shape)
