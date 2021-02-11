@@ -1,0 +1,9 @@
+pathlib
+pandas
+numpy
+seaborn
+matplotlib
+plotly
+statsmodels
+scipy
+scikit-learn

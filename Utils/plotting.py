@@ -1,0 +1,11 @@
+from matplotlib import pyplot
+
+
+def plot(y, yhat, save_path=None):
+    pyplot.plot(y, label="Expected")
+    pyplot.plot(yhat, label="Predicted")
+    pyplot.legend()
+    if save_path is not None:
+        # pyplot.savefig(BASEPATH / pathlib.Path("Outputs/Images/Xgboost/forecasting.jpg"))
+        pyplot.savefig(save_path)
+    pyplot.show()

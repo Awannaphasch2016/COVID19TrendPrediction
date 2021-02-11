@@ -1,0 +1,16 @@
+{
+    "configuration": {
+        "run": {
+            "adapter": "vscode-node",
+            "configuration": {
+                "requests": "launch",
+                "protocol": "auto",
+                "console": "integratedTerminal",
+                "stopOnEntry": true,
+                "program": "${workspaceRoot}/simple.py",
+                "cwd": "${workspceRoot}"
+            }
+        },
+        "foobar": {}
+    }
+}

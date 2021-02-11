@@ -1,0 +1,14 @@
+name: py38
+channels:
+  - conda-forge
+dependencies:
+  - python=3.8
+  - pathlib
+  - pandas
+  - numpy
+  - seaborn
+  - matplotlib
+  - plotly
+  - statsmodels
+  - scipy
+  - scikit-learn
