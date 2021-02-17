@@ -33,7 +33,8 @@ case_by_date_florida = df_by_date[df_by_date["state"] == "Florida"]
 # print(case_by_date_florida.shape)
 # exit()
 
-case_by_date_florida_np = case_by_date_florida.to_numpy()[:, 2:].astype("float")
+case_by_date_florida_np = case_by_date_florida.to_numpy()[
+    :, 2:].astype("float")
 # print(case_by_date_florida_np)
 # print(case_by_date_florida_np.shape)
 # exit()
@@ -42,7 +43,8 @@ case_by_date_florida_np = np.reshape(case_by_date_florida_np, (-1, 1))
 # print(NtsC.shape
 # exit()
 
-case_by_date_florida_train, case_by_date_florida_test = split(case_by_date_florida_np)
+case_by_date_florida_train, case_by_date_florida_test = split(
+    case_by_date_florida_np)
 # print(case_by_date_florida_train.shape)
 # print(case_by_date_florida_test.shape)
 # exit()

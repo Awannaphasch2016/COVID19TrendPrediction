@@ -1,6 +1,8 @@
 import numpy as np
 from sklearn.metrics import r2_score
 from pandas import DataFrame
+# from sklearn.model_selection import train_test_split
+from numpy import array
 
 
 def mape(y1, y_pred):
@@ -32,6 +34,7 @@ def frame_performance(
             columns=["mape", "mse", "rmse", "r2score"],
         )
         x.to_csv(save_path)
+        print(f'save performance to {save_path}')
     else:
         x = DataFrame(
             [[mse_val, mape_val, rmse_val, r2_val]],
@@ -49,6 +52,7 @@ def frame_pred_val(y_test, y_pred, save_path=None):
         )
         # print(x)
         x.to_csv(save_path)
+        print(f'save pred_val to {save_path}')
     else:
         x = DataFrame(
             np.array([y_test, y_pred]).T,
@@ -89,6 +93,7 @@ def walk_forward_validation(data, n_test, model_forecast):
     # step over each time-step in the test set
     for i in range(len(test)):
         # split test row into input and output columns
+        # testX, testy = test[i, :-1], test[i, -1]
         testX, testy = test[i, :-1], test[i, -1]
         # fit model on history and make a prediction
         # yhat = xgboost_forecast(history, testX)
@@ -105,4 +110,4 @@ def walk_forward_validation(data, n_test, model_forecast):
     mape_val = mape(test[:, -1], predictions)
     rmse_val = rmse(test[:, -1], predictions)
     r2_val = r2score(test[:, -1], predictions)
-    return mse_val, mape_val, rmse_val, r2_val, test[:, -1], predictions
+    return mse_val, mape_val, rmse_val, r2_val, test[:, -1], array(predictions)

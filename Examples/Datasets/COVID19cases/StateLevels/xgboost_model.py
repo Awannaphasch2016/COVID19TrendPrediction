@@ -97,30 +97,32 @@ data = series_to_supervised(case_by_date_florida_np, n_in=6)
 mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation(
     data, round(case_by_date_florida_np.shape[0] * 0.15), xgboost_forecast
 )
+print('done')
 
-frame_pred_val(
-    y.reshape(-1),
-    array(yhat).reshape(-1),
-    save_path=BASEPATH + "/Outputs/Models/Performances/Baselines/lstm_pred_val.csv",
-)
+# frame_pred_val(
+#     y.reshape(-1),
+#     array(yhat).reshape(-1),
+#     # save_path=BASEPATH + "/Outputs/Models/Performances/Baselines/lstm_pred_val.csv",
+# )
 
-plot(y, yhat, save_path=BASEPATH + "/Outputs/Images/Xgboost/forecasting.jpg")
+# plot(y, yhat, save_path=BASEPATH + "/Outputs/Images/Xgboost/forecasting.jpg")
 
-# plot expected vs preducted
-# pyplot.plot(y, label="Expected")
-# pyplot.plot(yhat, label="Predicted")
-# pyplot.legend()
-# # plt.savefig(BASEPATH / pathlib.Path("Outputs/Images/Xgboost/forecasting.jpg"))
-# pyplot.show()
+# # plot expected vs preducted
+# # pyplot.plot(y, label="Expected")
+# # pyplot.plot(yhat, label="Predicted")
+# # pyplot.legend()
+# # # plt.savefig(BASEPATH / pathlib.Path("Outputs/Images/Xgboost/forecasting.jpg"))
+# # pyplot.show()
 
-# DataFrame(
-#     [[mse_val, mape_val, rmse_val, r2_val]], columns=["mape", "mse", "rmse", "r2score"]
-# ).to_csv(BASEPATH + "/Outputs/Models/Performances/Baselines/xgboost_performance.csv")
-frame_performance(
-    mse_val,
-    mape_val,
-    rmse_val,
-    r2_val,
-    save_path=BASEPATH
-    + "/Outputs/Models/Performances/Baselines/xgboost_performance.csv",
-)
+# # DataFrame(
+# #     [[mse_val, mape_val, rmse_val, r2_val]], columns=["mape", "mse", "rmse", "r2score"]
+# # ).to_csv(BASEPATH + "/Outputs/Models/Performances/Baselines/xgboost_performance.csv")
+# frame_performance(
+#     mse_val,
+#     mape_val,
+#     rmse_val,
+#     r2_val,
+#     save_path=BASEPATH
+#     + "/Outputs/Models/Performances/Baselines/xgboost_performance.csv",
+# )
+
