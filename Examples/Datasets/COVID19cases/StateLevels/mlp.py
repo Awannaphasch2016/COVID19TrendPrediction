@@ -43,15 +43,19 @@ mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation(
 frame_pred_val(
     y.reshape(-1),
     array(yhat).reshape(-1),
-    save_path=BASEPATH + "/Outputs/Models/Performances/Baselines/mlp_pred_val.csv",
+    # save_path=BASEPATH + "/Outputs/Models/Performances/Baselines/mlp_pred_val.csv",
 )
 
-plot(y, yhat, save_path=BASEPATH + "/Outputs/Images/MLP/mlp_forecasting.jpg")
+plot(
+    y, 
+    yhat, 
+    # save_path=BASEPATH + "/Outputs/Images/MLP/mlp_forecasting.jpg"
+)
 
 frame_performance(
     mse_val,
     mape_val,
     rmse_val,
     r2_val,
-    save_path=BASEPATH + "/Outputs/Models/Performances/Baselines/mlp_performance.csv",
+    # save_path=BASEPATH + "/Outputs/Models/Performances/Baselines/mlp_performance.csv",
 )

@@ -1,5 +1,21 @@
 import os
 from pathlib import Path
+import time
+
+def timer(x, *args, **kwargs):
+    """
+    Arguments
+    ------
+    x: callable 
+
+    Returns  
+    ------
+    time in second
+    """
+    s = time.time()
+    x(*args, **kwargs)
+    f = time.time()
+    return f-s
 
 def searching_all_files(directory: Path):   
     file_list = [] # A list for storing files existing in directories

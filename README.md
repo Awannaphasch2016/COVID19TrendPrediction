@@ -1,3 +1,7 @@
+# DATASET
+* reference:
+    * us-state.csv (state-level data)
+        * https://github.com/nytimes/covid-19-data
 # BASELINE MODELS 
 * stochastic (random walk) basline
     * previous_day_prediciton

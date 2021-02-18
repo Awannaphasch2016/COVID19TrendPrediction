@@ -1,23 +1,13 @@
-BASEPATH	global_params.py	/^BASEPATH = os.path.dirname(os.path.realpath(__file__))$/;"	v
-FRAME_PERFORMANCE_PATH	global_params.py	/^FRAME_PERFORMANCE_PATH = "\/Outputs\/Models\/Performances\/Baselines\/{}\/{}_{}_performance.csv"$/;"	v
-FRAME_PRED_VAL_PATH	global_params.py	/^FRAME_PRED_VAL_PATH = "\/Outputs\/Models\/Performances\/Baselines\/{}\/{}_{}_pred_val.csv"$/;"	v
-PLOT_PATH	global_params.py	/^PLOT_PATH =  "\/Outputs\/Models\/Performances\/Baselines\/{}\/Images\/{}_{}_forcasting.jpg"$/;"	v
-all_files	scratch.py	/^all_files = searching_all_files(dir_path)$/;"	v
+X	Examples/Libraries/LazyPredict/regression_example.py	/^X = X.astype(np.float32)$/;"	v
 apply_model_to_all_states	Utils/modelling.py	/^def apply_model_to_all_states($/;"	f
+boston	Examples/Libraries/LazyPredict/regression_example.py	/^boston = datasets.load_boston()$/;"	v
 data	Examples/Datasets/COVID19cases/StateLevels/linear_regression.py	/^data = series_to_supervised(case_by_date_florida_np, n_in=6)$/;"	v
 data	Examples/Datasets/COVID19cases/StateLevels/xgboost_model.py	/^data = series_to_supervised(case_by_date_florida_np, n_in=6)$/;"	v
-destination	scratch.py	/^            destination = dir_path \/ f"{state}\/Images\/{file}"$/;"	v
-destination	scratch.py	/^            destination = dir_path \/ f"{state}\/{file}"$/;"	v
-dir_path	scratch.py	/^    dir_path = Path(BASEPATH) \/ Path(f'Outputs\/Models\/Performances\/Baselines\/{state}\/Image/;"	v
-dir_path	scratch.py	/^dir_path = Path(BASEPATH) \/ Path('Outputs\/Models\/Performances\/Baselines\/' )$/;"	v
-dir_path	scratch.py	/^dir_path = Path(BASEPATH) \/ Path(f'Outputs\/Models\/Performances\/Baselines\/')$/;"	v
-file	scratch.py	/^    file = str(all_files[i]).split('\/')[-1]$/;"	v
 frame_performance	Utils/eval_funcs.py	/^def frame_performance($/;"	f
 frame_pred_val	Utils/eval_funcs.py	/^def frame_pred_val(y_test, y_pred, save_path=None):$/;"	f
 linear_regression_forecast	Examples/Datasets/COVID19cases/StateLevels/linear_regression.py	/^def linear_regression_forecast(train, testX):$/;"	f
 linear_regression_forecast	Models/linear_regressoin.py	/^    def linear_regression_forecast(train, testX):$/;"	f	function:linear_regression_model	file:
 linear_regression_model	Models/linear_regressoin.py	/^def linear_regression_model(data, state):$/;"	f
-logic	scratch.py	/^logic = []$/;"	v
 mape	Utils/eval_funcs.py	/^def mape(y1, y_pred):$/;"	f
 mape_val	Examples/Datasets/COVID19cases/StateLevels/linear_regression.py	/^mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation($/;"	v
 mape_val	Examples/Datasets/COVID19cases/StateLevels/xgboost_model.py	/^mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation($/;"	v
@@ -31,6 +21,7 @@ np	Models/previous_day.py	/^import numpy as np$/;"	I
 np	Models/xgboost.py	/^import numpy as np$/;"	I
 np	Models/xgboost_model.py	/^import numpy as np$/;"	I
 np	Utils/eval_funcs.py	/^import numpy as np$/;"	I
+offset	Examples/Libraries/LazyPredict/regression_example.py	/^offset = int(X.shape[0] * 0.9)$/;"	v
 pd	Examples/Datasets/COVID19cases/StateLevels/linear_regression.py	/^import pandas as pd$/;"	I
 pd	Examples/Datasets/COVID19cases/StateLevels/xgboost_model.py	/^import pandas as pd$/;"	I
 pd	Models/linear_regressoin.py	/^import pandas as pd$/;"	I
@@ -54,13 +45,11 @@ px	Models/xgboost_model.py	/^import plotly.express as px$/;"	I
 r2_val	Examples/Datasets/COVID19cases/StateLevels/linear_regression.py	/^mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation($/;"	v
 r2_val	Examples/Datasets/COVID19cases/StateLevels/xgboost_model.py	/^mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation($/;"	v
 r2score	Utils/eval_funcs.py	/^def r2score(y1, y_pred):$/;"	f
+reg	Examples/Libraries/LazyPredict/regression_example.py	/^reg = LazyRegressor(verbose=0, ignore_warnings=False, custom_metric=None)$/;"	v
 rmse	Utils/eval_funcs.py	/^def rmse(y1, y_pred):$/;"	f
 rmse_val	Examples/Datasets/COVID19cases/StateLevels/linear_regression.py	/^mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation($/;"	v
 rmse_val	Examples/Datasets/COVID19cases/StateLevels/xgboost_model.py	/^mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation($/;"	v
-searching_all_files	Utils/utils.py	/^def searching_all_files(directory: Path):   $/;"	f
 series_to_supervised	Examples/Datasets/COVID19cases/StateLevels/xgboost_model.py	/^def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):$/;"	f
-source	scratch.py	/^    source = dir_path \/ file$/;"	v
-state	scratch.py	/^    state = file.split('.')[0].split('_')[0]$/;"	v
 train_test_split	Utils/eval_funcs.py	/^def train_test_split(data, n_test):$/;"	f
 walk_forward_validation	Utils/eval_funcs.py	/^def walk_forward_validation(data, n_test, model_forecast):$/;"	f
 xgboost_forecast	Examples/Datasets/COVID19cases/StateLevels/xgboost_model.py	/^def xgboost_forecast(train, testX):$/;"	f
