@@ -11,4 +11,5 @@ tensorflow
 keras
 lazypredict
 hummingbird-ml
-
+pandas-profiling
+streamlit-pandas-profiling

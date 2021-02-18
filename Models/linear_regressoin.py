@@ -31,11 +31,21 @@ def linear_regression_model(data, state):
         yhat = model.predict(asarray([testX]))
         return yhat[0]
 
-    data = series_to_supervised(case_by_date_florida_np, n_in=6)
+    # data = series_to_supervised(case_by_date_florida_np, n_in=6)
+    # mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation(
+    #     data, round(case_by_date_florida_np.shape[0] * 0.15), linear_regression_forecast
+    # )
 
+    case_by_date_per_states = data[data["state"] == state]
+    case_by_date_per_states_np = case_by_date_per_states.to_numpy()[:, 2:].astype(
+        "float"
+    )
+    case_by_date_per_states_np = np.reshape(case_by_date_per_states_np, (-1, 1))
+    data = series_to_supervised(case_by_date_per_states_np, n_in=6)
     mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation(
         data, round(case_by_date_florida_np.shape[0] * 0.15), linear_regression_forecast
     )
+
     return y, yhat, mse_val, mape_val, rmse_val, r2_val
 
 

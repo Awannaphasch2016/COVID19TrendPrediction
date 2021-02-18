@@ -24,6 +24,43 @@ def r2score(y1, y_pred):
     y1, y_pred = np.array(y1), np.array(y_pred)
     return r2_score(y1, y_pred)
 
+def beta_frame_performance(
+    metric_df, save_path=None, display=True
+):
+    if save_path is not None:
+        metric_df.to_csv(save_path)
+        # x = DataFrame(
+        #     [[mse_val, mape_val, rmse_val, r2_val]],
+        #     columns=["mape", "mse", "rmse", "r2score"],
+        # )
+        # x.to_csv(save_path)
+        print(f'save performance to {save_path}')
+    if display:
+        print(metric_df)
+
+    # if save_path is not None:
+    #     x = DataFrame(
+    #         [metrics_results],
+    #         columns=metrics_name,
+    #     )
+    #     x.to_csv(save_path)
+    #     # x = DataFrame(
+    #     #     [[mse_val, mape_val, rmse_val, r2_val]],
+    #     #     columns=["mape", "mse", "rmse", "r2score"],
+    #     # )
+    #     # x.to_csv(save_path)
+    #     print(f'save performance to {save_path}')
+    # else:
+    #     x = DataFrame(
+    #         [metrics_result],
+    #         columns=metrics_name,
+    #     )
+    #     # x = DataFrame(
+    #     #     [[mse_val, mape_val, rmse_val, r2_val]],
+    #     #     columns=["mape", "mse", "rmse", "r2score"],
+    #     # )
+    # if display:
+    #     print(x)
 
 def frame_performance(
     mse_val, mape_val, rmse_val, r2_val, save_path=None, display=True

@@ -15,7 +15,7 @@ from Utils.modelling import *
 
 def previous_day_model(data, state):
     print(f"applying previous day model to {state}...")
-    case_by_date_per_states = df_by_date[df_by_date["state"] == state]
+    case_by_date_per_states = data[data["state"] == state]
 
     case_by_date_per_states_np = case_by_date_per_states.to_numpy()[:, 2:].astype(
         "float"

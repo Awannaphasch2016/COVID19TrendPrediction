@@ -9,5 +9,6 @@ def plot(y, yhat, save_path=None, display=True):
         # pyplot.savefig(BASEPATH / pathlib.Path("Outputs/Images/Xgboost/forecasting.jpg"))
         pyplot.savefig(save_path)
         print(f"save plot to {save_path}")
+        pyplot.clf()
     if display:
         pyplot.show()

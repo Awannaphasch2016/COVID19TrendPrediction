@@ -35,11 +35,22 @@ def xgboost_model(data, state):
         yhat = model.predict(asarray([testX]))
         return yhat[0]
 
-    data = series_to_supervised(case_by_date_florida_np, n_in=6)
 
+    # data = series_to_supervised(case_by_date_florida_np, n_in=6)
+    # mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation(
+    #     data, round(case_by_date_florida_np.shape[0] * 0.15), xgboost_forecast
+    # )
+
+    case_by_date_per_states = data[data["state"] == state]
+    case_by_date_per_states_np = case_by_date_per_states.to_numpy()[:, 2:].astype(
+        "float"
+    )
+    case_by_date_per_states_np = np.reshape(case_by_date_per_states_np, (-1, 1))
+    data = series_to_supervised(case_by_date_per_states_np, n_in=6)
     mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation(
         data, round(case_by_date_florida_np.shape[0] * 0.15), xgboost_forecast
     )
+
     return y, yhat, mse_val, mape_val, rmse_val, r2_val
 
 if __name__ == "__main__":
@@ -51,5 +62,6 @@ if __name__ == "__main__":
         FRAME_PERFORMANCE_PATH,
         FRAME_PRED_VAL_PATH,
         PLOT_PATH,
-        test_mode=True,
+        test_mode=False,
+        # test_mode=True,
     )
