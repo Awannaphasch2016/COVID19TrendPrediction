@@ -10,9 +10,6 @@ from pathlib import Path
 # Web App Title
 st.markdown('''
 # **The EDA App**
-
-This is the **EDA App** created in Streamlit using the **pandas-profiling** library.
----
 ''')
 
 # # Upload CSV data
@@ -64,7 +61,7 @@ def apply_pandas_profiling_to_input():
                 st.image(img)
             except:
                 img = str(Path(BASEPATH) / f"Outputs/Models/Performances/Baselines/{state_name}/Images/{state_name}_{model_name}_model_forcasting.jpg")
-                st.image(img)
+               st.image(img)
 
 apply_pandas_profiling_to_input()
 
