@@ -25,6 +25,7 @@ cur_model_prediction	Examples/Datasets/COVID19cases/StateLevels/lazypredict_mode
 cur_model_prediction	Models/lazypredict_model.py	/^        cur_model_prediction = predictions$/;"	v
 data	Examples/Datasets/COVID19cases/StateLevels/lazypredict_model.py	/^    data = series_to_supervised(case_by_date_per_states_np, n_in=6)$/;"	v
 data	Examples/Datasets/COVID19cases/StateLevels/linear_regression.py	/^data = series_to_supervised(case_by_date_florida_np, n_in=6)$/;"	v
+data	Examples/Datasets/COVID19cases/StateLevels/lstm1.py	/^data = series_to_supervised(case_by_date_florida_np, n_in=6)$/;"	v
 data	Examples/Datasets/COVID19cases/StateLevels/mlp.py	/^data = series_to_supervised(case_by_date_florida_np, n_in=6)$/;"	v
 data	Examples/Datasets/COVID19cases/StateLevels/xgboost_model.py	/^data = series_to_supervised(case_by_date_florida_np, n_in=6)$/;"	v
 data	Models/Preprocessing/us_state.py	/^data = pd.read_csv($/;"	v
@@ -39,6 +40,9 @@ linear_regression_forecast	Examples/Datasets/COVID19cases/StateLevels/linear_reg
 linear_regression_forecast	Models/linear_regressoin.py	/^    def linear_regression_forecast(train, testX):$/;"	f	function:linear_regression_model
 linear_regression_model	Models/linear_regressoin.py	/^def linear_regression_model(data, state):$/;"	f
 load_csv	Examples/Libraries/StreamlitLib/example_1.py	/^    def load_csv():$/;"	f	function:apply_pandas_profiling_to_input
+lstm_forecast	Examples/Datasets/COVID19cases/StateLevels/lstm1.py	/^def lstm_forecast(train, testX):$/;"	f
+lstm_forecast	Models/lstm.py	/^    def lstm_forecast(train, testX):$/;"	f	function:lstm_model
+lstm_model	Models/lstm.py	/^def lstm_model(data,state):$/;"	f
 mape	Utils/eval_funcs.py	/^def mape(y1, y_pred):$/;"	f
 mape_val	Examples/Datasets/COVID19cases/StateLevels/linear_regression.py	/^mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation($/;"	v
 mape_val	Examples/Datasets/COVID19cases/StateLevels/xgboost_model.py	/^mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation($/;"	v
@@ -75,9 +79,12 @@ reg	Models/lazypredict_model.py	/^        reg = LazyRegressor(verbose=0, ignore_
 rmse	Utils/eval_funcs.py	/^def rmse(y1, y_pred):$/;"	f
 rmse_val	Examples/Datasets/COVID19cases/StateLevels/linear_regression.py	/^mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation($/;"	v
 rmse_val	Examples/Datasets/COVID19cases/StateLevels/xgboost_model.py	/^mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation($/;"	v
+save_path	Examples/Datasets/COVID19cases/StateLevels/lstm1.py	/^    save_path=BASEPATH + "\/Outputs\/Models\/Performances\/Baselines\/lstm_performance.csv",$/;"	v
+save_path	Examples/Datasets/COVID19cases/StateLevels/lstm1.py	/^    save_path=BASEPATH + "\/Outputs\/Models\/Performances\/Baselines\/lstm_pred_val.csv",$/;"	v
 series_to_supervised	Examples/Datasets/COVID19cases/StateLevels/xgboost_model.py	/^def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):$/;"	f
 specified_path	Examples/Datasets/COVID19cases/StateLevels/lazypredict_model.py	/^    specified_path = None if FRAME_PERFORMANCE_PATH is None else BASEPATH + FRAME_PERFORMANCE_PATH.format(state,state, model_name)$/;"	v
 specified_path	Models/lazypredict_model.py	/^        specified_path = None if FRAME_PERFORMANCE_PATH is None else BASEPATH + FRAME_PERFORMANCE_PATH.format(state,state, model_name)$/;"	v
+split_sequence	Examples/Datasets/COVID19cases/StateLevels/lstm1.py	/^def split_sequence(sequence, n_steps):$/;"	f
 test_mode	Examples/Datasets/COVID19cases/StateLevels/lazypredict_model.py	/^test_mode = False$/;"	v
 test_mode	Models/lazypredict_model.py	/^    test_mode = False$/;"	v
 test_mode	Models/previous_day.py	/^        test_mode=False,$/;"	v
