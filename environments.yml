@@ -13,3 +13,19 @@ dependencies:
   - statsmodels
   - scipy
   - scikit-learn
+  - pip: 
+      - pathlib
+      - pandas
+      - numpy
+      - seaborn
+      - matplotlib
+      - plotly
+      - statsmodels
+      - scipy
+      - scikit-learn
+      - tensorflow
+      - keras
+      - lazypredict
+      - hummingbird-ml
+      - pandas-profiling
+      - streamlit-pandas-profiling
