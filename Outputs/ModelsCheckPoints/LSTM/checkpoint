@@ -1,2 +1,0 @@
-model_checkpoint_path: "nyd-FL.ckpt"
-all_model_checkpoint_paths: "nyd-FL.ckpt"
