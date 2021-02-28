@@ -12,8 +12,10 @@ from global_params import *
 # from Utils.eval_funcs import *
 # from Utils.plotting import *
 from Utils.modelling import *
+from Utils.eval_funcs import *
 
-def previous_day_model(data, state):
+
+def previous_day_model(data, state, predict_next_n_days):
     print(f"applying previous day model to {state}...")
     case_by_date_per_states = data[data["state"] == state]
 
@@ -26,24 +28,53 @@ def previous_day_model(data, state):
         case_by_date_per_states_np
     )
 
-    cur_val = case_by_date_per_states_test[1:]
-    pred_val = case_by_date_per_states_test[:-1]
+
+    def previous_day_forcast(n):
+        reshape_data = []
+        i = 0 
+        while i + n <= case_by_date_per_states_test.shape[0]:
+            x = case_by_date_per_states_test[i].reshape(-1)
+            reshape_data.append([x] * n)
+            # print(case_by_date_florida_test[i:i+7])
+            i += 1
+        return array(reshape_data).reshape(-1, n)
+
+    # cur_val = case_by_date_per_states_test[1:]
+    # pred_val = case_by_date_per_states_test[:-1]
+    n = predict_next_n_days
+    cur_val = split_by_predict_next_n_day(case_by_date_per_states_test, n)
+    pred_val = previous_day_forcast(n)
+
     mse_val = mse(cur_val, pred_val)
     mape_val = mape(cur_val, pred_val)
     rmse_val = rmse(cur_val, pred_val)
     r2_val = r2score(cur_val, pred_val)
+
     return cur_val, pred_val, mse_val, mape_val, rmse_val, r2_val
 
 
 if __name__ == "__main__":
         
-    apply_model_to_all_states(
+    # apply_model_to_all_states(
+    #     df_by_date,
+    #     (previous_day_model, 'previous_val'),
+    #     BASEPATH,
+    #     FRAME_PERFORMANCE_PATH,
+    #     FRAME_PRED_VAL_PATH,
+    #     PLOT_PATH,
+    #     # test_mode=False,
+    #     test_mode=True,
+    # )
+
+    beta_apply_model_to_all_states(
         df_by_date,
         (previous_day_model, 'previous_val'),
+        7,
         BASEPATH,
         FRAME_PERFORMANCE_PATH,
         FRAME_PRED_VAL_PATH,
         PLOT_PATH,
-        test_mode=False,
+        # test_mode=False,
+        test_mode=True,
     )
 

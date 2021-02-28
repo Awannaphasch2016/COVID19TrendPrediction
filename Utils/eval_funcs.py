@@ -97,6 +97,15 @@ def frame_pred_val(y_test, y_pred, save_path=None):
         )
         # print(x)
 
+def split_by_predict_next_n_day(data, n):
+    reshape_data = []
+    i = 0 
+    while i + n <= data.shape[0]:
+        x = data[i:i+n].reshape(-1)
+        reshape_data.append(x)
+        # print(case_by_date_florida_test[i:i+7])
+        i += 1
+    return array(reshape_data)
 
 # split a univariate dataset into train/test sets
 def train_test_split(data, n_test):

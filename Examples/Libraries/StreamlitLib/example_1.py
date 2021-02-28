@@ -41,10 +41,10 @@ def apply_pandas_profiling_to_input():
     st.write(selected_df)
 
     enable_eda = st.checkbox('show pandas profiling')
-    # if enable_eda:
-    #     st.write('---')
-    #     st.header('**Pandas Profiling Report**')
-    #     st_profile_report(pr)
+    if enable_eda:
+        st.write('---')
+        st.header('**Pandas Profiling Report**')
+        st_profile_report(pr)
 
     enable_baseline_performance_output = st.checkbox('show baseline model performance')
     if enable_baseline_performance_output:

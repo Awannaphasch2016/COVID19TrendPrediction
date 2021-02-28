@@ -54,6 +54,7 @@ case_by_date_florida_train, case_by_date_florida_test = split(
 generator_train = TimeseriesGenerator(
     case_by_date_florida_train, case_by_date_florida_train, length=n_input, batch_size=1
 )
+
 # test2 = np.reshape(test, (-1, 1))
 generator_test = TimeseriesGenerator(
     case_by_date_florida_test, case_by_date_florida_test, length=n_input, batch_size=1
