@@ -3,6 +3,7 @@ from sklearn.metrics import r2_score
 from pandas import DataFrame
 # from sklearn.model_selection import train_test_split
 from numpy import array
+from Utils.aws_services import *
 
 
 def mape(y1, y_pred):

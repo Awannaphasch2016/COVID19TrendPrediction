@@ -19,7 +19,8 @@ from sklearn.utils import shuffle
 
 
 if __name__ == '__main__':
-    test_mode = False
+    # test_mode = False
+    test_mode = True
 
     for state in all_states:
 
@@ -50,8 +51,9 @@ if __name__ == '__main__':
 
 
         specified_path = None if FRAME_PERFORMANCE_PATH is None else BASEPATH + FRAME_PERFORMANCE_PATH.format(state,state, model_name)
+        # beta_frame_performance(cur_model_prediction, save_path=specified_path)
 
-        beta_frame_performance(cur_model_prediction, save_path=specified_path)
+        beta_frame_performance(cur_model_prediction, save_path=BASEPATH + SCRATCHES_OUTPUT_PATH + '/PredictNext{}/{}/{}_{}_performance.csv'.format(state,state,model_name))
         
         if test_mode:
             exit()

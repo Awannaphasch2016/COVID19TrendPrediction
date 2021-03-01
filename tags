@@ -1,4 +1,5 @@
 ARIMA	Models/baselines_models.py	/^def ARIMA():$/;"	f
+BASEPATH	Utils/aws_services.py	/^    BASEPATH = '\/home\/awannaphasch2016\/Documents\/Working\/COVID19TrendPrediction\/'$/;"	v
 BASEPATH	global_params.py	/^BASEPATH = os.path.dirname(os.path.realpath(__file__))$/;"	v
 CHECKPOINTS_PATH	global_params.py	/^CHECKPOINTS_PATH = "\/Outputs\/Models\/Checkpoints"$/;"	v
 FRAME_PERFORMANCE_PATH	global_params.py	/^FRAME_PERFORMANCE_PATH = "\/Outputs\/Models\/Performances\/Baselines\/PredictNext{}\/{}\/{}_{}_performance.csv"$/;"	v
@@ -8,6 +9,7 @@ LSTM	Models/baselines_models.py	/^def LSTM():$/;"	f
 LinearRegression	Models/baselines_models.py	/^def LinearRegression():$/;"	f
 MLP	Models/baselines_models.py	/^def MLP():$/;"	f
 PLOT_PATH	global_params.py	/^PLOT_PATH =  "\/Outputs\/Models\/Performances\/Baselines\/PredictNext{}\/{}\/Images\/{}_{}_forcasting.jpg"$/;"	v
+SCRATCHES_OUTPUT_PATH	global_params.py	/^SCRATCHES_OUTPUT_PATH = '\/Outputs\/Scratches'$/;"	v
 X	Examples/Libraries/LazyPredict/regression_example.py	/^X = X.astype(np.float32)$/;"	v
 XGBoostModel	Models/baselines_models.py	/^def XGBoostModel():$/;"	f
 all_states	Models/Preprocessing/us_state.py	/^all_states = df_by_date["state"].unique()$/;"	v
@@ -88,8 +90,12 @@ response	Examples/Libraries/Boto3/S3/download_data_to_COVID19TrendPrediction_buc
 rmse	Utils/eval_funcs.py	/^def rmse(y1, y_pred):$/;"	f
 rmse_val	Examples/Datasets/COVID19cases/StateLevels/linear_regression.py	/^mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation($/;"	v
 rmse_val	Examples/Datasets/COVID19cases/StateLevels/xgboost_model.py	/^mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation($/;"	v
+s3	Utils/aws_services.py	/^s3 = boto3.client('s3')$/;"	v
+save_file	Utils/aws_services.py	/^    save_file = 'random_stuff.txt'$/;"	v
 save_path	Examples/Datasets/COVID19cases/StateLevels/lstm1.py	/^    save_path=BASEPATH + "\/Outputs\/Models\/Performances\/Baselines\/lstm_performance.csv",$/;"	v
 save_path	Examples/Datasets/COVID19cases/StateLevels/lstm1.py	/^    save_path=BASEPATH + "\/Outputs\/Models\/Performances\/Baselines\/lstm_pred_val.csv",$/;"	v
+save_path	Utils/aws_services.py	/^    save_path = BASEPATH + 'Data\/Scratches'$/;"	v
+save_to_s3	Utils/aws_services.py	/^def save_to_s3(save_path, save_file):$/;"	f
 series_to_supervised	Examples/Datasets/COVID19cases/StateLevels/xgboost_model.py	/^def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):$/;"	f
 specified_path	Examples/Datasets/COVID19cases/StateLevels/lazypredict_model.py	/^    specified_path = None if FRAME_PERFORMANCE_PATH is None else BASEPATH + FRAME_PERFORMANCE_PATH.format(state,state, model_name)$/;"	v
 specified_path	Models/lazypredict_model.py	/^        specified_path = None if FRAME_PERFORMANCE_PATH is None else BASEPATH + FRAME_PERFORMANCE_PATH.format(state,state, model_name)$/;"	v
@@ -97,7 +103,7 @@ split_by_predict_next_n_day	Utils/eval_funcs.py	/^def split_by_predict_next_n_da
 split_by_predict_next_n_day	scratch.py	/^def split_by_predict_next_n_day(data, n):$/;"	f
 split_sequence	Examples/Datasets/COVID19cases/StateLevels/lstm1.py	/^def split_sequence(sequence, n_steps):$/;"	f
 test_mode	Examples/Datasets/COVID19cases/StateLevels/lazypredict_model.py	/^test_mode = False$/;"	v
-test_mode	Models/lazypredict_model.py	/^    test_mode = False$/;"	v
+test_mode	Models/lazypredict_model.py	/^    test_mode = True$/;"	v
 train_test_split	Utils/eval_funcs.py	/^def train_test_split(data, n_test):$/;"	f
 walk_forward_validation	Utils/eval_funcs.py	/^def walk_forward_validation(data, n_test, model_forecast):$/;"	f
 xgboost_forecast	Examples/Datasets/COVID19cases/StateLevels/xgboost_model.py	/^def xgboost_forecast(train, testX):$/;"	f

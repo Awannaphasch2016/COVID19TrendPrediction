@@ -11,3 +11,4 @@ FRAME_PERFORMANCE_PATH = "/Outputs/Models/Performances/Baselines/PredictNext{}/{
 FRAME_PRED_VAL_PATH = "/Outputs/Models/Performances/Baselines/PredictNext{}/{}/{}_{}_pred_val.csv"
 PLOT_PATH =  "/Outputs/Models/Performances/Baselines/PredictNext{}/{}/Images/{}_{}_forcasting.jpg"
 CHECKPOINTS_PATH = "/Outputs/Models/Checkpoints"
+SCRATCHES_OUTPUT_PATH = '/Outputs/Scratches'
