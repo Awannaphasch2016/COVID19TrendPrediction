@@ -1,5 +1,12 @@
 import os
 import pathlib
+from pathlib import Path
+
+ALL_METRICS = ['mse', 'rmse', 'r2score', 'mape']
+ALL_BASELINES_MODELS = ['mlp', 'linear regression', 'xgboost','previous_day']
+
+HOME_PATH = str(Path.home())
+PROJECT_PATH = 'Documents/Working/COVID19TrendPrediction'
 
 # BASEPATH = pathlib.Path(os.getcwd())
 # BASEPATH = '/home/awannaphasch2016/Documents/Working/CovidTrendPrediction'
@@ -12,3 +19,4 @@ FRAME_PRED_VAL_PATH = "/Outputs/Models/Performances/Baselines/PredictNext{}/{}/{
 PLOT_PATH =  "/Outputs/Models/Performances/Baselines/PredictNext{}/{}/Images/{}_{}_forcasting.jpg"
 CHECKPOINTS_PATH = "/Outputs/Models/Checkpoints"
 SCRATCHES_OUTPUT_PATH = '/Outputs/Scratches'
+

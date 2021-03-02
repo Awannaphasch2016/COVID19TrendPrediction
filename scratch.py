@@ -33,3 +33,22 @@ print(pred_np.shape)
 
 print(mape(data_np, pred_np))
 
+
+import pandas as pd
+data = {'Column 1'     : [1., 2., 3., 4.],
+        'Index Title'  : ["Apples", "Oranges", "Puppies", "Ducks"]}
+df = pd.DataFrame(data)
+df1 = pd.DataFrame(data)
+df.index = df["Index Title"]
+# del df["Index Title"]
+print (df)
+print(df1)
+
+import numpy as np
+x = np.arange(5)
+x_df = pd.DataFrame(x, columns=['first_model']).transpose()
+x_df_1 = pd.DataFrame(x, columns=['second_model']).transpose()
+x_df_2 = pd.DataFrame(x, columns=['third_model']).transpose()
+a = [x_df, x_df_1, x_df_2]
+# pd.concat([x_df, x_df_1])
+pd.concat(a)

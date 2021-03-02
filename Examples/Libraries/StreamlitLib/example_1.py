@@ -7,17 +7,69 @@ from streamlit_pandas_profiling import st_profile_report
 from global_params import *
 from pathlib import Path
 
+
+def display_baseline_performance_output(**kwargs):
+    st.write('## Baseline Performance Output')
+    notes = []
+    performance_table = []
+    for model_name in ALL_BASELINES_MODELS:
+        model_name = 'previous_val' if model_name == 'previous_day' else model_name
+        model_name = "_".join(model_name.split(' '))
+        params = kwargs['params'].copy()
+        params.append(model_name)
+        selected_metrics = kwargs['selected_metrics']
+        sort_by_metric = kwargs['sort_by_metric']
+        try:
+            performance_result = pd.read_csv(str(Path(BASEPATH + FRAME_PERFORMANCE_PATH.format(*params))))
+            performance_result.index = [model_name]
+            performance_table.append(performance_result[selected_metrics])
+        except:
+            try:
+                FRAME_PERFORMANCE_PATH_2 =  "/Outputs/Models/Performances/Baselines/PredictNext{}/{}/{}_{}_model_forcasting.jpg"
+                performance_result = pd.read_csv(str(Path(BASEPATH + FRAME_PERFORMANCE_PATH_2.format(*params))))
+                performance_result.index = [model_name]
+                performance_table.append(performance_result[selected_metrics])
+            except:
+                notes.append(f'{model_name} performance result is not recorded')
+    if len(performance_table) > 0:
+        performance_table_df = pd.concat(performance_table)
+        st.write(performance_table_df.sort_values(by=[sort_by_metric]))
+    if len(notes) > 0: 
+        st.write( 'Note: \n' + '\n\t'.join(notes))
+
+def display_baseline_plot(**kwargs):
+    st.write('## Baseline Plot')
+    for model_name in ALL_BASELINES_MODELS:
+        model_name = 'previous_val' if model_name == 'previous_day' else model_name
+        st.write(f"## {model_name}")
+        model_name = "_".join(model_name.split(' '))
+
+        params = kwargs['params'].copy()
+        params.append(model_name)
+
+        try:
+            img = str(Path(BASEPATH + PLOT_PATH.format(*params)))
+            st.image(img)
+        except:
+            try:
+                PLOT_PATH_2 =  "/Outputs/Models/Performances/Baselines/PredictNext{}/{}/Images/{}_{}_model_forcasting.jpg"
+                img = str(Path(BASEPATH + PLOT_PATH_2.format(*params)))
+                st.image(img)
+            except:
+                st.write('not yet exist')
+
+def display_eda(selected_df):
+    pr = ProfileReport(selected_df, explorative=True)
+    st.write('---')
+    st.header('**Pandas Profiling Report**')
+    st_profile_report(pr)
+
+
 # Web App Title
 st.markdown('''
 # **The EDA App**
 ''')
 
-# # Upload CSV data
-# with st.sidebar.header('1. Upload your CSV data'):
-#     uploaded_file = st.sidebar.file_uploader("Upload your input CSV file", type=["csv"])
-#     st.sidebar.markdown("""
-# [Example CSV input file](https://raw.githubusercontent.com/dataprofessor/data/master/delaney_solubility_with_descriptors.csv)
-# """)
 
 def apply_pandas_profiling_to_input():
 
@@ -28,7 +80,10 @@ def apply_pandas_profiling_to_input():
     df = load_csv()
     
     # selected_state = st.selectbox("select state", ('florida', 'la'))
-    state_name = st.selectbox("select state", np.unique(df.state.values).tolist())
+    state_name = st.sidebar.selectbox("select state", np.unique(df.state.values).tolist())
+
+    # selected_state = st.selectbox("select state", ('florida', 'la'))
+    pred_length = st.sidebar.selectbox("prediction length", [1,7])
 
     @st.cache
     def group_by_state():
@@ -36,32 +91,24 @@ def apply_pandas_profiling_to_input():
         return selected_df
     selected_df = group_by_state()
 
-    pr = ProfileReport(selected_df, explorative=True)
     st.header('**Input DataFrame**')
     st.write(selected_df)
 
-    enable_eda = st.checkbox('show pandas profiling')
+    # st.write()
+    
+    enable_eda = st.sidebar.checkbox('show pandas profiling')
+    enable_baseline_performance_output = st.sidebar.checkbox('show baseline model performance')
+    enable_baseline_plot = st.sidebar.checkbox('show baseline plot')
+    selected_metrics = st.sidebar.multiselect('select evaluation metrics', ALL_METRICS, default='mse')
+    sort_by_metric = st.sidebar.selectbox('sort_by_metric', ALL_METRICS)
+
     if enable_eda:
-        st.write('---')
-        st.header('**Pandas Profiling Report**')
-        st_profile_report(pr)
-
-    enable_baseline_performance_output = st.checkbox('show baseline model performance')
+        display_eda(selected_df)
     if enable_baseline_performance_output:
-        st.write('ok')
-        all_models_name = ['mlp', 'linear regression', 'xgboost','previous_day']
-        # model_name = st.selectbox("select model", all_models_name)
+        display_baseline_performance_output(params=[pred_length, state_name, state_name], selected_metrics=selected_metrics, sort_by_metric=sort_by_metric)
+    if enable_baseline_plot:
+        display_baseline_plot(params=[pred_length, state_name, state_name])
 
-        for model_name in all_models_name:
-            model_name = 'previous_val' if model_name == 'previous_day' else model_name
-            st.write(f"## {model_name}")
-            model_name = "_".join(model_name.split(' '))
-            try:
-                img = str(Path(BASEPATH) / f"Outputs/Models/Performances/Baselines/{state_name}/Images/{state_name}_{model_name}_forcasting.jpg")
-                st.image(img)
-            except:
-                img = str(Path(BASEPATH) / f"Outputs/Models/Performances/Baselines/{state_name}/Images/{state_name}_{model_name}_model_forcasting.jpg")
-                st.image(img)
-
-apply_pandas_profiling_to_input()
+if __name__ == '__main__':
+    apply_pandas_profiling_to_input()
 

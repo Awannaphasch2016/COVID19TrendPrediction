@@ -24,6 +24,8 @@ from pandas import concat
 from xgboost import XGBRegressor
 from matplotlib import pyplot
 
+
+
 # transform a time series dataset into a supervised learning dataset
 def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
     n_vars = 1 if type(data) is list else data.shape[1]

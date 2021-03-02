@@ -15,7 +15,7 @@ from Utils.modelling import *
 from Utils.eval_funcs import *
 
 
-def previous_day_model(data, state, predict_next_n_days):
+def previous_day_model(data, state, n_in, n_out):
     print(f"applying previous day model to {state}...")
     case_by_date_per_states = data[data["state"] == state]
 
@@ -27,7 +27,6 @@ def previous_day_model(data, state, predict_next_n_days):
     case_by_date_per_states_train, case_by_date_per_states_test = split(
         case_by_date_per_states_np
     )
-
 
     def previous_day_forcast(n):
         reshape_data = []
@@ -41,16 +40,26 @@ def previous_day_model(data, state, predict_next_n_days):
 
     # cur_val = case_by_date_per_states_test[1:]
     # pred_val = case_by_date_per_states_test[:-1]
-    n = predict_next_n_days
-    cur_val = split_by_predict_next_n_day(case_by_date_per_states_test, n)
-    pred_val = previous_day_forcast(n)
+    cur_val = split_by_predict_next_n_day(case_by_date_per_states_test, n_out)
+    pred_val = previous_day_forcast(n_out)
+    # print(pred_val.shape)
+    # print(cur_val.shape)
+    # exit()
 
     mse_val = mse(cur_val, pred_val)
     mape_val = mape(cur_val, pred_val)
     rmse_val = rmse(cur_val, pred_val)
     r2_val = r2score(cur_val, pred_val)
 
-    return cur_val, pred_val, mse_val, mape_val, rmse_val, r2_val
+    eval_metric_df = DataFrame(
+        [[mse_val, mape_val, rmse_val, r2_val]],
+        columns=["mape", "mse", "rmse", "r2score"],
+    )
+    # print(eval_metric_df)
+    # exit()
+
+    # return cur_val, pred_val, mse_val, mape_val, rmse_val, r2_val
+    return cur_val, pred_val, eval_metric_df
 
 
 if __name__ == "__main__":
@@ -69,12 +78,13 @@ if __name__ == "__main__":
     beta_apply_model_to_all_states(
         df_by_date,
         (previous_day_model, 'previous_val'),
+        6,
         7,
         BASEPATH,
         FRAME_PERFORMANCE_PATH,
         FRAME_PRED_VAL_PATH,
         PLOT_PATH,
-        # test_mode=False,
-        test_mode=True,
+        test_mode=False,
+        # test_mode=True,
     )
 

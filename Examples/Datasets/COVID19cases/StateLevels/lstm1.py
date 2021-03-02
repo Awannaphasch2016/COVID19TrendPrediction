@@ -12,8 +12,9 @@ from Utils.preprocessing import *
 from Utils.utils import *
 from Utils.plotting import *
 
+
 # split a univariate sequence into samples
-def split_sequence(sequence, n_steps):
+def split_sequences(sequence, n_steps):
     X, y = list(), list()
     for i in range(len(sequence)):
         # find the end of this pattern
@@ -26,7 +27,6 @@ def split_sequence(sequence, n_steps):
         X.append(seq_x)
         y.append(seq_y)
     return array(X), array(y)
-
 
 # fit an xgboost model and make a one step prediction
 def lstm_forecast(train, testX):
