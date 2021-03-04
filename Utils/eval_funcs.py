@@ -5,6 +5,7 @@ from pandas import DataFrame
 from numpy import array
 from Utils.aws_services import *
 from pathlib import Path
+from numpy import hstack
 
 # split a multivariate sequence into samples
 def split_sequences(sequences, n_steps_in, n_steps_out):
@@ -163,6 +164,33 @@ def train_test_split(data, n_test):
 #     return yhat[0]
 
 # walk-forward validation for univariate data
+
+def gamma_walk_forward_validation(train,test, testX, testy, n_test, model_forecast):
+    """
+    model_forcast = see xgboost_forecast() as en example.
+    """
+    predictions = list()
+    # split dataset
+    # seed history with training dataset
+    history = [x for x in train]
+    # step over each time-step in the test set
+    for i in range(len(test)):
+        assert testX[i].shape[0] + testy[i].shape[0] == test.shape[1], 'multi-step splitting is not correct'
+        # fit model on history and make a prediction
+        yhat = model_forecast(history, testX[i])
+        # store forecast in list of predictions
+        predictions.append(yhat)
+        # add actual observation to history for the next loop
+        history.append(test[i])
+        # summarize progress
+        print(f">\n\texpected={testy[i]}\n\tpredicted={yhat}")
+    mse_val = mse(testy, predictions)
+    mape_val = mape(testy, predictions)
+    rmse_val = rmse(testy, predictions)
+    r2_val = r2score(testy, predictions)
+    return mse_val, mape_val, rmse_val, r2_val, testy, predictions
+
+
 def beta_walk_forward_validation(data, n_test, model_forecast, n_in, n_out):
     """
     model_forcast = see xgboost_forecast() as en example.
@@ -170,16 +198,6 @@ def beta_walk_forward_validation(data, n_test, model_forecast, n_in, n_out):
     predictions = list()
     # split dataset
     train, test = train_test_split(data, n_test)
-    # print(train.shape)
-    # print(test.shape)
-    # exit()
-
-    # n_in, n_out = 6, 7 
-    # X, y = split_sequences(train, n_in, n_out) 
-    # print(X.shape)
-    # print(y.shape)
-    # exit()
-
     # seed history with training dataset
     history = [x for x in train]
     # step over each time-step in the test set

@@ -14,3 +14,4 @@ hummingbird-ml
 pandas-profiling
 streamlit-pandas-profiling
 boto3
+click

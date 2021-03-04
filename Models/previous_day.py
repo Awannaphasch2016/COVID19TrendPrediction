@@ -13,9 +13,10 @@ from global_params import *
 # from Utils.plotting import *
 from Utils.modelling import *
 from Utils.eval_funcs import *
+from Utils.cli import * 
 
 
-def previous_day_model(data, state, n_in, n_out):
+def previous_day_model(data, state, n_in, n_out, is_multi_step_prediction):
     print(f"applying previous day model to {state}...")
     case_by_date_per_states = data[data["state"] == state]
 
@@ -28,7 +29,7 @@ def previous_day_model(data, state, n_in, n_out):
         case_by_date_per_states_np
     )
 
-    def previous_day_forcast(n):
+    def previous_day_forcast_multi_step(n):
         reshape_data = []
         i = 0 
         while i + n <= case_by_date_per_states_test.shape[0]:
@@ -38,13 +39,24 @@ def previous_day_model(data, state, n_in, n_out):
             i += 1
         return array(reshape_data).reshape(-1, n)
 
+    def previous_day_forcast(n):
+        reshape_data = []
+        i = 0 
+        while i + n <= case_by_date_per_states_test.shape[0]:
+            x = case_by_date_per_states_test[i].reshape(-1)
+            reshape_data.append([x])
+            # print(case_by_date_florida_test[i:i+7])
+            i += 1
+        return array(reshape_data).reshape(-1)
+
     # cur_val = case_by_date_per_states_test[1:]
     # pred_val = case_by_date_per_states_test[:-1]
     cur_val = split_by_predict_next_n_day(case_by_date_per_states_test, n_out)
-    pred_val = previous_day_forcast(n_out)
-    # print(pred_val.shape)
-    # print(cur_val.shape)
-    # exit()
+    if is_multi_step_prediction:
+        pred_val = previous_day_forcast_multi_step(n_out)
+    else:
+        cur_val = cur_val[:, -1]
+        pred_val = previous_day_forcast(n_out)
 
     mse_val = mse(cur_val, pred_val)
     mape_val = mape(cur_val, pred_val)
@@ -55,12 +67,9 @@ def previous_day_model(data, state, n_in, n_out):
         [[mse_val, mape_val, rmse_val, r2_val]],
         columns=["mape", "mse", "rmse", "r2score"],
     )
-    # print(eval_metric_df)
-    # exit()
 
     # return cur_val, pred_val, mse_val, mape_val, rmse_val, r2_val
     return cur_val, pred_val, eval_metric_df
-
 
 if __name__ == "__main__":
         
@@ -80,6 +89,8 @@ if __name__ == "__main__":
         (previous_day_model, 'previous_val'),
         6,
         7,
+        # True,
+        False,
         BASEPATH,
         FRAME_PERFORMANCE_PATH,
         FRAME_PRED_VAL_PATH,

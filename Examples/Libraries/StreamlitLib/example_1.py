@@ -25,7 +25,8 @@ def display_baseline_performance_output(**kwargs):
             performance_table.append(performance_result[selected_metrics])
         except:
             try:
-                FRAME_PERFORMANCE_PATH_2 =  "/Outputs/Models/Performances/Baselines/PredictNext{}/{}/{}_{}_model_forcasting.jpg"
+                FRAME_PERFORMANCE_PATH_2 =  "/Outputs/Models/Performances/Baselines/PredictNext{}/{}/{}_{}_model_performance.csv"
+                # st.write(str(Path(BASEPATH + FRAME_PERFORMANCE_PATH_2.format(*params))))
                 performance_result = pd.read_csv(str(Path(BASEPATH + FRAME_PERFORMANCE_PATH_2.format(*params))))
                 performance_result.index = [model_name]
                 performance_table.append(performance_result[selected_metrics])
