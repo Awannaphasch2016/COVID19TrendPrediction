@@ -17,6 +17,8 @@ from Utils.preprocessing import *
 from Utils.utils import *
 from Utils.plotting import *
 from Utils.modelling import *
+import click
+
 
 
 def mlp_model(data, state, n_in,n_out, is_multi_step_prediction):
@@ -88,7 +90,7 @@ def mlp_model(data, state, n_in,n_out, is_multi_step_prediction):
         trainX, trainy = train[:, :n_steps_in], train[:, -1].reshape(-1,1)
         testX, testy = test[:, :n_steps_in], test[:, -1].reshape(-1,1)
         mse_val, mape_val, rmse_val, r2_val, y, yhat = gamma_walk_forward_validation(
-            hstack([trainX, trainy]), hstack([testX, testy]), testX, testy, n_test, mlp_forecast
+        n   hstack([trainX, trainy]), hstack([testX, testy]), testX, testy, n_test, mlp_forecast
         )
 
     eval_metric_df = DataFrame(
@@ -111,17 +113,28 @@ if __name__ == "__main__":
     # )
 
 
-    beta_apply_model_to_all_states(
-        df_by_date,
-        (mlp_model, 'mlp'),
-        6,
-        7,
-        # True,
-        False,
-        BASEPATH,
-        FRAME_PERFORMANCE_PATH,
-        FRAME_PRED_VAL_PATH,
-        PLOT_PATH,
-        test_mode=False,
-        # test_mode=True,
-    )
+    # beta_apply_model_to_all_states(
+    #     df_by_date,
+    #     (mlp_model, 'mlp'),
+    #     6,
+    #     7,
+    #     # True,
+    #     False,
+    #     BASEPATH,
+    #     FRAME_PERFORMANCE_PATH,
+    #     FRAME_PRED_VAL_PATH,
+    #     PLOT_PATH,
+    #     test_mode=False,
+    #     # test_mode=True,
+    # )
+
+    non_cli_params = {
+        'data': df_by_date,
+        'model' : (mlp_model, 'mlp'),
+        'base_path' : BASEPATH,
+        'frame_performance_path' : FRAME_PERFORMANCE_PATH,
+        'frame_pred_val_path' : FRAME_PRED_VAL_PATH,
+        'plot_path' : PLOT_PATH,
+    }
+
+    gamma_apply_model_to_all_states(obj={'non_cli_params': non_cli_params})

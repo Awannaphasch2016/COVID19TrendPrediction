@@ -86,15 +86,26 @@ if __name__ == "__main__":
     #     test_mode=True,
     # )
 
-    beta_apply_model_to_all_states(
-        df_by_date,
-        (lstm_model, 'lstm'),
-        6,
-        7,
-        BASEPATH,
-        FRAME_PERFORMANCE_PATH,
-        FRAME_PRED_VAL_PATH,
-        PLOT_PATH,
-        test_mode=False,
-        # test_mode=True,
-    )
+    # beta_apply_model_to_all_states(
+    #     df_by_date,
+    #     (lstm_model, 'lstm'),
+    #     6,
+    #     7,
+    #     BASEPATH,
+    #     FRAME_PERFORMANCE_PATH,
+    #     FRAME_PRED_VAL_PATH,
+    #     PLOT_PATH,
+    #     test_mode=False,
+    #     # test_mode=True,
+    # )
+
+    non_cli_params = {
+        'data': df_by_date,
+        'model' : (lstm_model, 'lstm'),
+        'base_path' : BASEPATH,
+        'frame_performance_path' : FRAME_PERFORMANCE_PATH,
+        'frame_pred_val_path' : FRAME_PRED_VAL_PATH,
+        'plot_path' : PLOT_PATH,
+    }
+
+    gamma_apply_model_to_all_states(obj={'non_cli_params': non_cli_params})

@@ -2,15 +2,34 @@ from Utils import *
 from Models.Preprocessing.us_state import *
 from pathlib import Path
 import pandas
+import click
+from pprint import pprint
 
-def gamma_apply_model_to_all_states(
-    data, model,n_in, n_out, is_multi_step_prediction, base_path, frame_performance_path=None, frame_pred_val_path=None, 
-    plot_path=None, test_mode=False
-):
+@click.command()
+@click.argument('n_in', type=int)
+@click.argument('n_out', type=int)
+@click.option('--test_mode', is_flag=True)
+@click.option('--is_multi_step_prediction', is_flag=True)
+@click.pass_context
+def gamma_apply_model_to_all_states(ctx, **kwargs):
+    n_in                     = kwargs['n_in']
+    n_out                    = kwargs['n_out']
+    is_multi_step_prediction = kwargs['is_multi_step_prediction']
+    test_mode                = kwargs['test_mode']
+
+    non_cli_params           = ctx.obj['non_cli_params']
+
+    data                     = non_cli_params['data']
+    model                    = non_cli_params['model']
+    base_path                = non_cli_params['data']
+    frame_performance_path   = non_cli_params['frame_performance_path']
+    frame_pred_val_path      = non_cli_params['frame_pred_val_path']
+    plot_path                = non_cli_params['plot_path'] 
+
+    pprint(kwargs)
+    pprint(non_cli_params)
     model, model_name = model
     for i in all_states:
-        print('i am here')
-        exit()
         cur_val, pred_val, eval_metric_df = model(data,i, n_in, n_out, is_multi_step_prediction)
         multi_step_folder = 'MultiStep' if is_multi_step_prediction else 'OneStep'
         specified_path = None if frame_performance_path is None else BASEPATH + frame_performance_path.format(multi_step_folder,n_out,i,i, model_name)
@@ -59,8 +78,6 @@ def beta_apply_model_to_all_states(
 ):
     model, model_name = model
     for i in all_states:
-        print('i am here')
-        exit()
         cur_val, pred_val, eval_metric_df = model(data,i, n_in, n_out, is_multi_step_prediction)
         multi_step_folder = 'MultiStep' if is_multi_step_prediction else 'OneStep'
         specified_path = None if frame_performance_path is None else BASEPATH + frame_performance_path.format(multi_step_folder,n_out,i,i, model_name)
