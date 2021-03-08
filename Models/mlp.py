@@ -3,8 +3,12 @@
 
 # univariate mlp example
 from numpy import array
-from keras.models import Sequential
-from keras.layers import Dense
+from tensorflow import keras
+from tensorflow.keras.models import Sequential 
+from tensorflow.keras.layers import Dense 
+
+# from keras.models import Sequential
+# from keras.layers import Dense
 from numpy import asarray
 from numpy import array
 from numpy import hstack
