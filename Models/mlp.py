@@ -90,7 +90,7 @@ def mlp_model(data, state, n_in,n_out, is_multi_step_prediction):
         trainX, trainy = train[:, :n_steps_in], train[:, -1].reshape(-1,1)
         testX, testy = test[:, :n_steps_in], test[:, -1].reshape(-1,1)
         mse_val, mape_val, rmse_val, r2_val, y, yhat = gamma_walk_forward_validation(
-        n   hstack([trainX, trainy]), hstack([testX, testy]), testX, testy, n_test, mlp_forecast
+           hstack([trainX, trainy]), hstack([testX, testy]), testX, testy, n_test, mlp_forecast
         )
 
     eval_metric_df = DataFrame(
