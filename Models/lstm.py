@@ -1,7 +1,9 @@
 # univariate mlp example
 from numpy import array
-from keras.models import Sequential
-from keras.layers import Dense, LSTM
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, LSTM
+# from keras.models import Sequential
+# from keras.layers import Dense, LSTM
 from numpy import asarray
 
 # from Models.Preprocessing.us_state import *
@@ -26,7 +28,7 @@ from Utils.modelling import *
 #         y.append(seq_y)
 #     return array(X), array(y)
 
-def lstm_model(data,state, n_in,n_out):
+def lstm_model(data,state, n_in,n_out, is_multi_step_prediction):
     print(f'applying lstm to {state}...')
 
     def lstm_forecast(train, testX):
@@ -60,9 +62,12 @@ def lstm_model(data,state, n_in,n_out):
     # mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation(
     #     data, round(case_by_date_florida_np.shape[0] * 0.15), lstm_forecast
     # )
-    mse_val, mape_val, rmse_val, r2_val, y, yhat = beta_walk_forward_validation(
-        data, round(case_by_date_florida_np.shape[0] * 0.15), lstm_forecast, n_in=n_steps_in, n_out=n_steps_out
-    )
+    if is_multi_step_prediction:
+        mse_val, mape_val, rmse_val, r2_val, y, yhat = beta_walk_forward_validation(
+            data, round(case_by_date_florida_np.shape[0] * 0.15), lstm_forecast, n_in=n_steps_in, n_out=n_steps_out
+        )
+    else:
+        raise NotImplementedError()
 
     eval_metric_df = DataFrame(
         [[mse_val, mape_val, rmse_val, r2_val]],
