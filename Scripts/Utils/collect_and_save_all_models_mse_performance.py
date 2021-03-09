@@ -10,10 +10,12 @@ import click
 # def cli():
 #     pass
 
-
 @click.command()
-@click.argument('pred_length')
+@click.argument('n_out')
+@click.argument('n_in')
 @click.option('--is_multi_step_prediction', is_flag=True)
+@click.option('--save', is_flag=True)
+@click.option('--aggr', is_flag=True)
 def run_func(**kwargs):
     # print(kwargs)
     # exit()
@@ -25,15 +27,20 @@ def collect_and_save_all_models_mse_performance(**kwargs):
         return csv
     df = load_csv()
     all_states = np.unique(df.state.values).tolist()
-
     all_performance_table = []
-    # pred_length = 5
-    pred_length = kwargs['pred_length']
+    # n_out = 5
+
+    n_out              = kwargs['n_out']
+    n_in              = kwargs['n_in']
     is_multi_step_prediction = kwargs['is_multi_step_prediction']
-    multi_step_folder = 'MultiStep' if is_multi_step_prediction else 'OneStep'
+    multi_step_folder        = 'MultiStep' if is_multi_step_prediction else 'OneStep'
+    is_save                  = kwargs['save']
+    is_aggr                  = kwargs['aggr']
+    aggr_op                  = 'mean'
+
     for state_name in all_states:
 
-        kwargs = {'params':[multi_step_folder,pred_length, state_name, state_name]}
+        kwargs = {'params':[multi_step_folder,n_out,n_in, state_name, state_name]}
         # print(kwargs)
         # exit()
 
@@ -79,7 +86,8 @@ def collect_and_save_all_models_mse_performance(**kwargs):
                     # print(x)
                 except:
                     print(f'{model_name} performance result is not recorded')
-
+        # print(str(Path(BASEPATH + FRAME_PERFORMANCE_PATH.format(*params))))
+        # exit()
         if len(performance_table) > 0:
             performance_table_df = pd.concat(performance_table)
             # print(performance_table_df)
@@ -91,12 +99,29 @@ def collect_and_save_all_models_mse_performance(**kwargs):
     # exit()
     all_performance_table_df = pd.concat(all_performance_table, axis=1)
     # all_performance_table.append(all_performance_table_df)
-    save_path = f'Outputs/DrZhu/all_performance_table_df_{pred_length}.csv'
+    file_extension = 'csv'
+    save_path = f'Outputs/DrZhu/all_performance_table_df_n_out{n_out}_n_in{n_in}.{file_extension}'
     all_performance_table_df = all_performance_table_df.transpose()
-    all_performance_table_df.to_csv(save_path)
+    print('concat result')
     print(all_performance_table_df)
-    print(f'save to {save_path}')
+    print('=============================================================')
 
-    print('done')
+    output_performance_table_df = all_performance_table_df
+
+    if is_aggr: 
+        save_path = Path(save_path)
+        file_name = save_path.stem + f'_mean.{file_extension}'
+        save_path = str(save_path.parents[0] / file_name)
+        print(f'aggr result with {aggr_op}')
+        output_performance_table_df = all_performance_table_df.agg(['mean'])
+        print(output_performance_table_df)
+        print('=============================================================')
+    if is_save: 
+        output_performance_table_df.to_csv(save_path)
+        print(f'save to {save_path}')
+        print('=============================================================')
+    else:
+        print(f'outputs are not saved')
+
 if __name__ == '__main__':
     run_func()

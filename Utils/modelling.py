@@ -32,7 +32,7 @@ def gamma_apply_model_to_all_states(ctx, **kwargs):
     for i in all_states:
         cur_val, pred_val, eval_metric_df = model(data,i, n_in, n_out, is_multi_step_prediction)
         multi_step_folder = 'MultiStep' if is_multi_step_prediction else 'OneStep'
-        specified_path = None if frame_performance_path is None else BASEPATH + frame_performance_path.format(multi_step_folder,n_out,i,i, model_name)
+        specified_path = None if frame_performance_path is None else BASEPATH + frame_performance_path.format(multi_step_folder,n_out, n_in, i,i, model_name)
         parent_dir = '/'.join(specified_path.split('/')[:-1])
         print(parent_dir)
         Path(parent_dir).mkdir(parents=True,exist_ok=True)
@@ -43,7 +43,7 @@ def gamma_apply_model_to_all_states(ctx, **kwargs):
         )
         
 
-        specified_path = None if frame_pred_val_path is None else BASEPATH + frame_pred_val_path.format(multi_step_folder, n_out,i,i, model_name)
+        specified_path = None if frame_pred_val_path is None else BASEPATH + frame_pred_val_path.format(multi_step_folder, n_out, n_in, i,i, model_name)
         parent_dir = '/'.join(specified_path.split('/')[:-1])
         print(parent_dir)
         Path(parent_dir).mkdir(parents=True,exist_ok=True)
@@ -57,7 +57,7 @@ def gamma_apply_model_to_all_states(ctx, **kwargs):
         pred_val_df = pandas.read_csv(specified_path)
         cur_val, pred_val = pred_val_df['y_test'].tolist(), pred_val_df['y_pred'].tolist()
 
-        specified_path = None if plot_path is None else BASEPATH + plot_path.format(multi_step_folder,n_out, i,i, model_name)
+        specified_path = None if plot_path is None else BASEPATH + plot_path.format(multi_step_folder,n_out,n_in, i,i, model_name)
         parent_dir = '/'.join(specified_path.split('/')[:-1])
         print(parent_dir)
         Path(parent_dir).mkdir(parents=True,exist_ok=True)

@@ -57,6 +57,7 @@ def xgboost_model(data, state, n_in, n_out, is_multi_step_prediction):
     data = series_to_supervised(case_by_date_per_states_np, n_in=n_steps_in, n_out=n_steps_out)
     n_test = round(case_by_date_florida_np.shape[0] * 0.15)
     train, test = train_test_split(data, n_test)
+
     if is_multi_step_prediction:
         testX, testy = test[:, :n_steps_in], test[:, -n_steps_out:]
         mse_val, mape_val, rmse_val, r2_val, y, yhat = gamma_walk_forward_validation(
@@ -105,7 +106,6 @@ if __name__ == "__main__":
     #     test_mode=False,
     #     # test_mode=True,
     # )
-
     non_cli_params = {
         'data': df_by_date,
         'model' : (xgboost_model, 'xgboost_model'),
