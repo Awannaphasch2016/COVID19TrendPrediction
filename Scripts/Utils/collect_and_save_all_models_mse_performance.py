@@ -65,9 +65,9 @@ def collect_and_save_all_models_mse_performance(**kwargs):
             # all_performance_table_df = pd.concat([x,y], axis=0)
             # print(all_performance_table_df)
             # exit()
-
             try:
                 performance_result = pd.read_csv(str(Path(BASEPATH + FRAME_PERFORMANCE_PATH.format(*params))))
+                # print(str(Path(BASEPATH + FRAME_PERFORMANCE_PATH.format(*params))))
                 performance_result.index = [model_name]
                 # performance_table.append(performance_result['mse'])
                 x = pd.DataFrame(performance_result['mse'])
@@ -76,7 +76,8 @@ def collect_and_save_all_models_mse_performance(**kwargs):
                 # print(x)
             except:
                 try:
-                    FRAME_PERFORMANCE_PATH_2 =  "/Outputs/Models/Performances/Baselines/{}/PredictNext{}/{}/{}_{}_model_performance.csv"
+                    FRAME_PERFORMANCE_PATH_2 =  "/Outputs/Models/Performances/Baselines/{}/PredictNext{}/WindowLength{}/{}/{}_{}_model_performance.csv"
+                    # print(str(Path(BASEPATH + FRAME_PERFORMANCE_PATH_2.format(*params))))
                     performance_result = pd.read_csv(str(Path(BASEPATH + FRAME_PERFORMANCE_PATH_2.format(*params))))
                     performance_result.index = [model_name]
                     # performance_table.append(performance_result['mse'])
@@ -85,9 +86,9 @@ def collect_and_save_all_models_mse_performance(**kwargs):
                     performance_table.append(x)
                     # print(x)
                 except:
+                    pass
                     print(f'{model_name} performance result is not recorded')
-        # print(str(Path(BASEPATH + FRAME_PERFORMANCE_PATH.format(*params))))
-        # exit()
+
         if len(performance_table) > 0:
             performance_table_df = pd.concat(performance_table)
             # print(performance_table_df)
@@ -100,7 +101,8 @@ def collect_and_save_all_models_mse_performance(**kwargs):
     all_performance_table_df = pd.concat(all_performance_table, axis=1)
     # all_performance_table.append(all_performance_table_df)
     file_extension = 'csv'
-    save_path = f'Outputs/DrZhu/all_performance_table_df_n_out{n_out}_n_in{n_in}.{file_extension}'
+    # save_path = f'Outputs/DrZhu/all_performance_table_df_n_out{n_out}_n_in{n_in}.{file_extension}'
+    save_path = 'Outputs/DrZhu/{}/PredictNext{}/WindowLength{}/all_performance_table_df.{}'.format(multi_step_folder, n_out,n_in, file_extension)
     all_performance_table_df = all_performance_table_df.transpose()
     print('concat result')
     print(all_performance_table_df)
@@ -112,7 +114,7 @@ def collect_and_save_all_models_mse_performance(**kwargs):
         save_path = Path(save_path)
         file_name = save_path.stem + f'_mean.{file_extension}'
         save_path = str(save_path.parents[0] / file_name)
-        print(f'aggr result with {aggr_op}')
+        print(f'aggr result with {aggr_op} operation')
         output_performance_table_df = all_performance_table_df.agg(['mean'])
         print(output_performance_table_df)
         print('=============================================================')

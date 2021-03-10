@@ -7,8 +7,49 @@ from pandas import DataFrame, Series
 from pandas import concat
 from numpy import array
 from numpy import concatenate
+import click
 
-def load_data():
+
+@click.command()
+@click.argument('n_out')
+@click.argument('n_in')
+@click.option('--is_multi_step_prediction', is_flag=True)
+@click.option('--save', is_flag=True)
+@click.option('--aggr', is_flag=True)
+@click.option('--load_data_n', default=0, type=int)
+def run_func(**kwargs):
+
+    load_data_n              = kwargs['load_data_n']
+    multi_step_folder        = 'MultiStep' if kwargs['is_multi_step_prediction'] else 'OneStep'
+    aggr_op                  = 'mean'
+
+    kwargs['multi_step_folder'] = multi_step_folder
+    kwargs['aggr_op'] = aggr_op
+    
+    if load_data_n == 1:
+        data, plot_params = load_data_1(**kwargs)
+    elif load_data_n == 2:
+        raise NotImplementedError
+        data = load_data_2(**kwargs)
+    elif load_data_n == 3:
+        raise NotImplementedError
+        data = load_data_3(**kwargs)
+    else:
+        raise ValueError("please load one of the availble data. see load_data_n args")
+    barplot(data, plot_params)
+
+
+def load_data_1(**kwargs):
+
+    n_out                    = kwargs['n_out']
+    n_in                     = kwargs['n_in']
+    is_multi_step_prediction = kwargs['is_multi_step_prediction']
+    is_save                  = kwargs['save']
+    is_aggr                  = kwargs['aggr']
+    load_data_n              = kwargs['load_data_n']
+    multi_step_folder        = kwargs['multi_step_folder']
+    aggr_op                  = kwargs['aggr_op']
+
     sns.set_theme(style="whitegrid")
 
     # data = sns.load_dataset("tips")
@@ -45,23 +86,35 @@ def load_data():
     all_model_state_mse_df = DataFrame(all_model_state_mse_np, columns=all_col_names)
     all_model_state_mse_df = all_model_state_mse_df.astype({all_col_names[-1]: float})
 
-    return all_model_state_mse_df
+    plot_kwargs = {
+            'multi_step_folder': multi_step_folder,
+            'n_out':             n_out,
+            'n_in':              n_in,
+            'x':                 'state',
+            'y':                 'mse',
+            'hue':               'model'
+            }
 
-def barplot(data):
+    return all_model_state_mse_df, plot_kwargs
 
-    # ax = sns.barplot(x="day", y="total_bill", hue="sex", data=data)
-    # plt.show()
-    print(data)
-    print(data.dtypes)
-    sns.set(font_scale=0.7)
-    ax = sns.barplot(x="state", y="mse", hue="model", data=data)
+def barplot(data, plot_kwargs):
+
+    sns.set(font_scale=0.5)
+    sns.set(rc={'figure.figsize':(20,13)})
+
+    ax = sns.barplot(x=plot_kwargs['x'], y=plot_kwargs['y'], hue=plot_kwargs['hue'], data=data)
+
+    # save_path = '<Onestep>/<PredictNextN>/<WindowLengthN>/Image/barplot_<x-axis>_<y-axis>_<legend>'
+    save_path = 'Outputs/DrZhu/{}/PredictNext{}/WindowLength{}/Images/barplot_{}_{}_{}.png'.format(*list(plot_kwargs.values()))
     for item in ax.get_xticklabels():
-        item.set_rotation(50)
+        item.set_rotation(90)
     ax.set_yscale('log')
-    plt.show
+    Path(save_path).parents[0].mkdir(parents=True,exist_ok=True)
+    plt.savefig(save_path)
     plt.show()
 
 if __name__ == '__main__':
-    data = load_data()
-    barplot(data)
+    run_func()
+    # data = load_data_1()
+    # barplot(data)
 

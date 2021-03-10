@@ -11,6 +11,7 @@ from pprint import pprint
 @click.option('--test_mode', is_flag=True)
 @click.option('--is_multi_step_prediction', is_flag=True)
 @click.pass_context
+
 def gamma_apply_model_to_all_states(ctx, **kwargs):
     n_in                     = kwargs['n_in']
     n_out                    = kwargs['n_out']
