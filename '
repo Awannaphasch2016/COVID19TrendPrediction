@@ -1,0 +1,222 @@
+import seaborn as sns
+import matplotlib.pyplot as plt
+from pandas import read_csv
+from global_params import *
+from pprint import pprint
+from pandas import DataFrame, Series
+from pandas import concat
+from numpy import array
+from numpy import concatenate
+import click
+
+@click.group()
+@click.option('--is_multi_step_prediction', is_flag=True)
+@click.option('--save', is_flag=True)
+@click.option('--aggr', is_flag=True)
+@click.pass_context
+def run_func(ctx,**kwargs):
+    
+    ctx.ensure_object(dict)
+
+    # load_data_n              = kwargs['load_data_n']
+    ctx.obj['multi_step_folder'] = 'MultiStep' if kwargs['is_multi_step_prediction'] else 'OneStep'
+    ctx.obj['aggr_op']           = 'mean'
+    ctx.obj['save']              = kwargs['save']
+    ctx.obj['aggr']              = kwargs['aggr']
+    ctx.obj['plot_func']         = bar_plot
+
+@run_func.command()
+@click.argument('n_out')
+@click.argument('n_in')
+@click.pass_context
+def load_data_1(ctx, **kwargs):
+    """for each WindowLengthN and PredictNextN, x-axis = state and y-axis = mse."""
+
+    load_data_n       = 1
+    n_out             = kwargs['n_out']
+    n_in              = kwargs['n_in']
+    is_save           = ctx.obj['save']
+    is_aggr           = ctx.obj['aggr']
+    multi_step_folder = ctx.obj['multi_step_folder']
+    aggr_op           = ctx.obj['aggr_op']
+    plot_func         = ctx.obj['plot_func']
+
+    sns.set_theme(style="whitegrid")
+
+    # data = sns.load_dataset("tips")
+
+    file_path ='Outputs/DrZhu/all_performance_table_df_1.csv'
+    data = read_csv(str(Path(BASEPATH) / file_path))
+    models_num = data.shape[1] -1
+    new_cols = data.columns.tolist()
+    new_cols[0] = 'state'
+    data.columns =  new_cols
+    data_dict = data.to_dict()
+
+    all_model_mse = []
+    all_states = []
+    for i, (key, val) in enumerate(data_dict.items()):
+        if key != 'state':
+            col_1 = {'model': [key for _ in  list(val.keys())]}
+            col_2 = {'mse': list(val.values())}
+
+            # col_1 = [key for _ in  list(val.keys())]
+            # col_2 = list(val.values())
+            col_np = array([col_1['model'], col_2['mse']]).T
+            # print(col_1)
+            # print(col_2)
+            all_model_mse.append(col_np)
+        else:
+            col_1 = {'state': [key for key in  list(val.values())]}
+            all_states = list(col_1.values())
+
+    all_model_mse_np = array(all_model_mse).reshape(-1,2)
+    all_states_np = array(all_states * models_num).reshape(-1, 1)
+
+    all_col_names = ['state','model', 'mse']
+    all_model_state_mse_np = concatenate([all_states_np, all_model_mse_np], axis=1)
+    all_model_state_mse_df = DataFrame(all_model_state_mse_np, columns=all_col_names)
+    all_model_state_mse_df = all_model_state_mse_df.astype({all_col_names[-1]: float})
+
+    plot_kwargs = {
+            'load_data_n': load_data_n,
+            'multi_step_folder': multi_step_folder,
+            'n_out':             n_out,
+            'n_in':              n_in,
+            'x':                 'state',
+            'y':                 'mse',
+            'hue':               'model',
+            }
+
+    save_path = 'Outputs/DrZhu/load_data_n/load_data_{}/{}/PredictNext{}/WindowLength{}/Images/barplot_{}_{}_{}.png'
+
+    data = all_model_state_mse_df
+    plot_func(data, save_path, is_save, plot_kwargs)
+
+    # return all_model_state_mse_df,save_path, plot_kwargs
+
+@run_func.command()
+@click.pass_context
+def load_data_2(ctx, **kwargs):
+    """for each PredictNextN, x-axis = WindowLengthN and y-axis = mse."""
+    raise NotImplementedError 
+
+    # is_multi_step_prediction = kwargs['is_multi_step_prediction']
+    # is_save                  = kwargs['save']
+    # is_aggr                  = kwargs['aggr']
+    # multi_step_folder        = ctx.obj['multi_step_folder']
+    # aggr_op                  = ctx.obj['aggr_op']
+
+    # print(kwargs)
+    # print(ctx.obj)
+    # print('done')
+    # exit()
+
+    # dir_path = 'Outputs/Performances/Baselines/{}/PredictNext{}'
+    
+    # for n_out in ALL_PREDICTNEXTN:
+    #     dir_path = Path(BASEPATH + dir_path.format(multi_step_folder, n_out))
+    #     print(dir_path)
+    #     exit()
+    #     for p in path.rglob("*performance.csv"):
+    #          print(p.name) 
+
+@run_func.command()
+@click.pass_context
+def load_data_3(ctx, **kwargs):
+    """for each WindowLengthN, x-axis = PredictNextN and y-axis = mse."""
+
+    is_save                  = ctx.obj['save']
+    is_aggr                  = ctx.obj['aggr']
+    multi_step_folder        = ctx.obj['multi_step_folder']
+    aggr_op                  = ctx.obj['aggr_op']
+
+    all_predictnext_n_aggr_performance = {}
+
+    for n_out in ALL_PREDICTNEXTN:
+        dir_path = 'Outputs/DrZhu/{}/PredictNext{}'
+        dir_path = Path(BASEPATH) / dir_path.format(multi_step_folder, n_out)
+        # for p in dir_path.rglob("*performance.csv"):
+        # print(dir_path)
+        # print(dir_path.exists())
+        for p in dir_path.rglob(f"*df_{aggr_op}.csv"):
+            df = read_csv(p)
+            new_cols = df.columns.to_list()
+            new_cols.append('n_out')
+            print(new_cols)
+            new_vals = df.values.tolist()
+            new_vals.append(n_out)
+            print(new_vals)
+            exit()
+            all_predictnext_n_aggr_performance.setdefault(n_out, []).append(df)
+
+    data = concat([*all_predictnext_n_aggr_performance[1]])
+    # print(data)
+
+    print('===========')
+    # file_path ='Outputs/DrZhu/all_performance_table_df_1.csv'
+    # data = read_csv(str(Path(BASEPATH) / file_path))
+    # print(data)
+    models_num = data.shape[1] -1
+    new_cols = data.columns.tolist()
+    # new_cols[0] = 'state'
+    new_cols[0] = 'aggr'
+    data.columns =  new_cols
+    data_dict = data.to_dict()
+
+    all_model_mse = []
+    all_states = []
+    pprint(data_dict)
+    for i, (key, val) in enumerate(data_dict.items()):
+        if key != 'aggr':
+            col_1 = {'model': [key for _ in  list(val.keys())]}
+            col_2 = {'mse': list(val.values())}
+
+            # col_1 = [key for _ in  list(val.keys())]
+            # col_2 = list(val.values())
+            col_np = array([col_1['model'], col_2['mse']]).T
+            # print(col_1)
+            # print(col_2)
+            all_model_mse.append(col_np)
+        else:
+            col_1 = {data.columns[0]: [key for key in  list(val.values())]}
+            all_states = list(col_1.values())
+
+    all_model_mse_np = array(all_model_mse).reshape(-1,2)
+    all_states_np = array(all_states * models_num).reshape(-1, 1)
+
+    all_col_names = [data.columns[0],'model', 'mse']
+    all_model_state_mse_np = concatenate([all_states_np, all_model_mse_np], axis=1)
+    all_model_state_mse_df = DataFrame(all_model_state_mse_np, columns=all_col_names)
+    all_model_state_mse_df = all_model_state_mse_df.astype({all_col_names[-1]: float})
+    print(all_model_state_mse_df)
+    print('done')
+
+def bar_plot(data, save_path, is_save, plot_kwargs):
+
+    sns.set(font_scale=0.5)
+    sns.set(rc={'figure.figsize':(20,13)})
+
+    ax = sns.barplot(x=plot_kwargs['x'], y=plot_kwargs['y'], hue=plot_kwargs['hue'], data=data)
+
+    # save_path = '<Onestep>/<PredictNextN>/<WindowLengthN>/Image/barplot_<x-axis>_<y-axis>_<legend>'
+    # save_path = 'Outputs/DrZhu/load_data_n/load_data_{}/{}/PredictNext{}/WindowLength{}/Images/barplot_{}_{}_{}.png'.format(*list(plot_kwargs.values()))
+    save_path = save_path.format(*list(plot_kwargs.values()))
+    # # print(Path(save_path).is_file())
+    # exit()
+    for item in ax.get_xticklabels():
+        item.set_rotation(90)
+    ax.set_yscale('log')
+    Path(save_path).parents[0].mkdir(parents=True,exist_ok=True)
+    print('=============================')
+    if is_save:
+        print(f'save bar plot to {save_path}')
+        plt.savefig(save_path)
+    else:
+        print('bar plot is not saved')
+    print('=============================')
+    plt.show()
+
+if __name__ == '__main__':
+    run_func()
+

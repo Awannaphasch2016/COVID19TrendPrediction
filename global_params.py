@@ -20,3 +20,5 @@ PLOT_PATH =  "/Outputs/Models/Performances/Baselines/{}/PredictNext{}/WindowLeng
 CHECKPOINTS_PATH = "/Outputs/Models/Checkpoints"
 SCRATCHES_OUTPUT_PATH = '/Outputs/Scratches'
 
+ALL_PREDICTNEXTN = [1,7,14,30]
+ALL_WINDOWLENGTHN = [1,7,14,30]
