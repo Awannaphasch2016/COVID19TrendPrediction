@@ -62,12 +62,15 @@ def gamma_apply_model_to_all_states(ctx, **kwargs):
         multi_step_folder = 'MultiStep' if is_multi_step_prediction else 'OneStep'
         model_params_list = ['']
         if len(model_params.keys()) > 0:
-            for i,j in model_params.items():
-                model_params_list.append(f'{i}={j}')
+            for key,value in model_params.items():
+                model_params_list.append(f'{key}={value}')
         model_params_str = '_'.join(model_params_list)
 
         specified_path = None if frame_performance_path is None else BASEPATH + frame_performance_path.format(multi_step_folder,n_out, n_in, i,i, model_name)
         specified_path = _add_file_suffix(specified_path, model_params_str)
+        print(multi_step_folder,n_out, n_in, i,i, model_name)
+        print(specified_path)
+        exit()
         parent_dir = '/'.join(specified_path.split('/')[:-1])
         print(parent_dir)
         Path(parent_dir).mkdir(parents=True,exist_ok=True)
