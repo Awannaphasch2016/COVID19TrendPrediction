@@ -9,9 +9,9 @@ def beta_plot(y, yhat, save_path=None, display=True):
     if save_path is not None:
         # pyplot.savefig(BASEPATH / pathlib.Path("Outputs/Images/Xgboost/forecasting.jpg"))
         pyplot.savefig(save_path)
+        print(f"save plot to local at {save_path}")
         save_to_s3(save_path)
-        
-        print(f"save plot to {save_path}")
+        print(f"save plot to S3 at {save_path}")
         pyplot.clf()
     if display:
         pyplot.show()

@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import time
+import click
 
 def timer(x, *args, **kwargs):
     """
@@ -35,3 +36,4 @@ def searching_all_files(directory: Path):
 #     # create directory if not alreayd exist
 #     if not os.path.exists(directory):
 #         os.makedirs(directory)
+

@@ -25,7 +25,11 @@ import click
 
 
 
-def mlp_model(data, state, n_in,n_out, is_multi_step_prediction):
+def mlp_model(data, state, n_in,n_out, is_multi_step_prediction, model_params=None):
+    assert 'epoch' in list(model_params.keys())
+
+    epoch = model_params['epoch']
+
     print(f"applying mlp to {state}...")
     
     # fit an xgboost model and make a one step prediction
@@ -41,7 +45,7 @@ def mlp_model(data, state, n_in,n_out, is_multi_step_prediction):
         # model.add(Dense(predict_next_n_days))
         model.compile(optimizer="adam", loss="mse")
         # fit model
-        model.fit(trainX, trainy, epochs=10, verbose=0)
+        model.fit(trainX, trainy, epochs=epoch, verbose=0)
         # make a one-step prediction
         yhat = model.predict(asarray([testX]))
         return yhat.reshape(-1)
@@ -60,7 +64,7 @@ def mlp_model(data, state, n_in,n_out, is_multi_step_prediction):
         # model.add(Dense(predict_next_n_days))
         model.compile(optimizer="adam", loss="mse")
         # fit model
-        model.fit(trainX, trainy, epochs=10, verbose=0)
+        model.fit(trainX, trainy, epochs=epoch, verbose=0)
         # make a one-step prediction
         yhat = model.predict(asarray([testX]))
         return yhat.reshape(-1)
@@ -131,6 +135,8 @@ if __name__ == "__main__":
     #     test_mode=False,
     #     # test_mode=True,
     # )
+
+    # model_parmas = {'epoch'}
 
     non_cli_params = {
         'data': df_by_date,

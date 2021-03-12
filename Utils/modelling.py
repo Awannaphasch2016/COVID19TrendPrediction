@@ -5,18 +5,31 @@ import pandas
 import click
 from pprint import pprint
 
+
 @click.command()
 @click.argument('n_in', type=int)
 @click.argument('n_out', type=int)
 @click.option('--test_mode', is_flag=True)
 @click.option('--is_multi_step_prediction', is_flag=True)
+@click.option('--model_param_epoch', type=int)
+# @click.option('--model_param_tmp', type=int)
 @click.pass_context
-
 def gamma_apply_model_to_all_states(ctx, **kwargs):
+
     n_in                     = kwargs['n_in']
     n_out                    = kwargs['n_out']
     is_multi_step_prediction = kwargs['is_multi_step_prediction']
     test_mode                = kwargs['test_mode']
+    model_param_epoch        = kwargs['model_param_epoch']
+    # model_param_tmp       = kwargs['model_param_tmp']
+
+    model_params = {}
+
+    if model_param_epoch is not None:
+        model_params['epoch'] = model_param_epoch
+
+    # if model_param_tmp is not None:
+    #     model_params['tmp'] = model_param_tmp
 
     non_cli_params           = ctx.obj['non_cli_params']
 
@@ -30,10 +43,31 @@ def gamma_apply_model_to_all_states(ctx, **kwargs):
     pprint(kwargs)
     pprint(non_cli_params)
     model, model_name = model
+
+    def _add_file_suffix(file_path, file_suffix):
+        if len(specified_path.split('.')) == 2:
+            file_path = file_path.split('.')[0] + file_suffix + '.' + file_path.split('.')[-1]
+        else:
+            raise NotImplementedError
+        return file_path
+
     for i in all_states:
-        cur_val, pred_val, eval_metric_df = model(data,i, n_in, n_out, is_multi_step_prediction)
+        # cur_val, pred_val, eval_metric_df = model(data,i, n_in, n_out, is_multi_step_prediction)
+        try:
+            cur_val, pred_val, eval_metric_df = model(data,i, n_in, n_out, is_multi_step_prediction, model_params)
+        except TypeError:
+            assert len(model_params.keys()) == 0, f'{model_name} doesn"t accept any model_params.'
+            cur_val, pred_val, eval_metric_df = model(data,i, n_in, n_out, is_multi_step_prediction)
+
         multi_step_folder = 'MultiStep' if is_multi_step_prediction else 'OneStep'
+        model_params_list = ['']
+        if len(model_params.keys()) > 0:
+            for i,j in model_params.items():
+                model_params_list.append(f'{i}={j}')
+        model_params_str = '_'.join(model_params_list)
+
         specified_path = None if frame_performance_path is None else BASEPATH + frame_performance_path.format(multi_step_folder,n_out, n_in, i,i, model_name)
+        specified_path = _add_file_suffix(specified_path, model_params_str)
         parent_dir = '/'.join(specified_path.split('/')[:-1])
         print(parent_dir)
         Path(parent_dir).mkdir(parents=True,exist_ok=True)
@@ -45,6 +79,7 @@ def gamma_apply_model_to_all_states(ctx, **kwargs):
         
 
         specified_path = None if frame_pred_val_path is None else BASEPATH + frame_pred_val_path.format(multi_step_folder, n_out, n_in, i,i, model_name)
+        specified_path = _add_file_suffix(specified_path, model_params_str)
         parent_dir = '/'.join(specified_path.split('/')[:-1])
         print(parent_dir)
         Path(parent_dir).mkdir(parents=True,exist_ok=True)
@@ -59,6 +94,7 @@ def gamma_apply_model_to_all_states(ctx, **kwargs):
         cur_val, pred_val = pred_val_df['y_test'].tolist(), pred_val_df['y_pred'].tolist()
 
         specified_path = None if plot_path is None else BASEPATH + plot_path.format(multi_step_folder,n_out,n_in, i,i, model_name)
+        specified_path = _add_file_suffix(specified_path, model_params_str)
         parent_dir = '/'.join(specified_path.split('/')[:-1])
         print(parent_dir)
         Path(parent_dir).mkdir(parents=True,exist_ok=True)

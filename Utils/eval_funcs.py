@@ -48,13 +48,14 @@ def beta_frame_performance(
 
     if save_path is not None:
         metric_df.to_csv(save_path)
+        print(f'save pred_val to local at {save_path}')
         save_to_s3(save_path)
         # x = DataFrame(
         #     [[mse_val, mape_val, rmse_val, r2_val]],
         #     columns=["mape", "mse", "rmse", "r2score"],
         # )
         # x.to_csv(save_path)
-        print(f'save performance to {save_path}')
+        print(f'save pred_val to S3 at {save_path}')
     if display:
         print(metric_df)
 
@@ -109,8 +110,9 @@ def beta_frame_pred_val(y_test, y_pred, save_path=None):
         )
         # print(x)
         x.to_csv(save_path)
+        print(f'save pred_val to local at {save_path}')
         save_to_s3(save_path)
-        print(f'save pred_val to {save_path}')
+        print(f'save pred_val to S3 at {save_path}')
     else:
         x = DataFrame(
             np.array([y_test, y_pred]).T,
