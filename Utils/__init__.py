@@ -5,3 +5,4 @@ from Utils.preprocessing import *
 from Utils.modelling import *
 from Utils.aws_services import *
 from Utils.cli import *
+from Utils.wandb_utils import *

@@ -43,19 +43,22 @@ def r2score(y1, y_pred):
     return r2_score(y1, y_pred)
 
 def beta_frame_performance(
-    metric_df, save_path=None, display=True
+    metric_df, save_path=None, display=True, is_save=False
 ):
 
-    if save_path is not None:
+    if is_save:
+        assert save_path is not None
         metric_df.to_csv(save_path)
-        print(f'save pred_val to local at {save_path}')
+        print(f'save frame_performance to local at {save_path}')
         save_to_s3(save_path)
         # x = DataFrame(
         #     [[mse_val, mape_val, rmse_val, r2_val]],
         #     columns=["mape", "mse", "rmse", "r2score"],
         # )
         # x.to_csv(save_path)
-        print(f'save pred_val to S3 at {save_path}')
+        print(f'save frame_performance to S3 at {save_path}')
+    else:
+        print('frame_performance is not saved')
     if display:
         print(metric_df)
 
@@ -102,8 +105,9 @@ def frame_performance(
     if display:
         print(x)
 
-def beta_frame_pred_val(y_test, y_pred, save_path=None):
-    if save_path is not None:
+def beta_frame_pred_val(y_test, y_pred, save_path=None, is_save=False):
+    if is_save:
+        assert save_path is not None
         x = DataFrame(
             np.array([y_test, y_pred]).T,
             columns=["y_test", "y_pred"],
@@ -119,6 +123,7 @@ def beta_frame_pred_val(y_test, y_pred, save_path=None):
             columns=["y_test", "y_pred"],
         )
         # print(x)
+        print('pred_val is not saved')
 
 
 def frame_pred_val(y_test, y_pred, save_path=None):

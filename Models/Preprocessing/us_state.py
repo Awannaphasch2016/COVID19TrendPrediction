@@ -5,13 +5,32 @@ from keras.preprocessing.sequence import TimeseriesGenerator
 from global_params import *
 from Utils.preprocessing import *
 from Utils.utils import *
+import wandb
+
+data_path = 'Data/Raw/COVID19Cases/StateLevels/us-states.csv'
+
+# # ==wandb
+# # os.environ['WANDB_MODE'] = 'dryrun'
+# # Start a new run, tracking hyperparameters in config
+# run = wandb.init(project=PROJECT_NAME, 
+#     # group="OneStep/PredictNextN/WindowLengthN/state",
+#     name='data',
+#     save_code=True,
+#     job_type='dataset-creation',
+#     tags=['Data', 'Raw', 'COVID19Cases', 'StateLevels', 'us-states.csv'],
+# )
+# artifact = wandb.Artifact('Raw_COVID19Cases_StateLevels_us-states.csv', type='dataset')
+# artifact.add_file(data_path)
+# run.log_artifact(artifact)
+# wandb.finish()
 
 # ==params
 n_input = 5
 n_features = 1
 
 data = pd.read_csv(
-    str(BASEPATH / pathlib.Path("Data/Raw/COVID19Cases/StateLevels/us-states.csv"))
+    # str(BASEPATH / pathlib.Path("Data/Raw/COVID19Cases/StateLevels/us-states.csv"))
+    str(BASEPATH / pathlib.Path(data_path))
 )  # (18824, 5)
 
 df_by_date = pd.DataFrame(

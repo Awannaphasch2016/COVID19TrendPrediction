@@ -3,6 +3,13 @@ from pathlib import Path
 import time
 import click
 
+def add_file_suffix(file_path, file_suffix):
+    if len(file_path.split('.')) == 2:
+        file_path = file_path.split('.')[0] + file_suffix + '.' + file_path.split('.')[-1]
+    else:
+        raise NotImplementedError
+    return file_path
+
 def timer(x, *args, **kwargs):
     """
     Arguments

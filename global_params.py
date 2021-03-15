@@ -2,6 +2,8 @@ import os
 import pathlib
 from pathlib import Path
 
+PROJECT_NAME = 'COVID19TrendPrediction'
+
 ALL_METRICS = ['mse', 'rmse', 'r2score', 'mape']
 ALL_BASELINES_MODELS = ['mlp', 'linear regression', 'xgboost','previous_day', 'lstm']
 
@@ -19,6 +21,7 @@ FRAME_PRED_VAL_PATH = "/Outputs/Models/Performances/Baselines/{}/PredictNext{}/W
 PLOT_PATH =  "/Outputs/Models/Performances/Baselines/{}/PredictNext{}/WindowLength{}/{}/Images/{}_{}_forcasting.jpg"
 CHECKPOINTS_PATH = "/Outputs/Models/Checkpoints"
 SCRATCHES_OUTPUT_PATH = '/Outputs/Scratches'
+
 
 ALL_PREDICTNEXTN = [1,7,14,30]
 ALL_WINDOWLENGTHN = [1,7,14,30]

@@ -257,7 +257,10 @@ def load_data_3(ctx, **kwargs):
             if tmp.reshape(-1).shape[0] == 0:
                 tmp = j
             else:
-                tmp = vstack([tmp, j])
+                try:
+                    tmp = vstack([tmp, j])
+                except:
+                    pass
 
     data = DataFrame(tmp, columns=cols)
     print('===========')
