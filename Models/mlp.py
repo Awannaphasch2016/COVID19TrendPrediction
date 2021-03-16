@@ -7,45 +7,51 @@ from tensorflow import keras
 from tensorflow.keras.models import Sequential 
 from tensorflow.keras.layers import Dense 
 
-# from keras.models import Sequential
-# from keras.layers import Dense
 from numpy import asarray
 from numpy import array
 from numpy import hstack
 
-# from sklearn.model_selection import train_test_split
 from global_params import *
-# from Models.Preprocessing.us_state import *
 from Utils.eval_funcs import *
 from Utils.preprocessing import *
 from Utils.utils import *
 from Utils.plotting import *
 from Utils.modelling import *
 import click
+from wandb.keras import WandbCallback
+import wandb
 
 
 
 def mlp_model(data, state, n_in,n_out, is_multi_step_prediction, model_params=None):
     assert 'epoch' in list(model_params.keys())
 
-    epoch = model_params['epoch']
+    # epoch = model_params['epoch']
+    epoch = model_params.epoch
 
     print(f"applying mlp to {state}...")
     
     # fit an xgboost model and make a one step prediction
     # univariate mlp example
     def mlp_forecast_multi_step(train, testX):
+        raise NotImplementedError('this function need to be updated to be similar to mlp_forecast')
         # transform list into array
         train = asarray(train)
         # split into input and output columns
         trainX, trainy = train[:, :n_in], train[:, -n_out:]
-        model = Sequential()
-        model.add(Dense(100, activation="relu", input_dim=n_in))
-        model.add(Dense(n_out))
-        # model.add(Dense(predict_next_n_days))
+        model = Sequential(
+            [
+                Dense(100, activation="relu", input_dim=n_in),
+                Dense(n_out),
+            ]
+        )
+
+        # model = Sequential()
+        # model.add(Dense(100, activation="relu", input_dim=n_in))
+        # model.add(Dense(n_out))
         model.compile(optimizer="adam", loss="mse")
         # fit model
-        model.fit(trainX, trainy, epochs=epoch, verbose=0)
+        model.fit(trainX, trainy, epochs=epoch, verbose=0, callbacks=[WandbCallback()])
         # make a one-step prediction
         yhat = model.predict(asarray([testX]))
         return yhat.reshape(-1)
@@ -58,16 +64,29 @@ def mlp_model(data, state, n_in,n_out, is_multi_step_prediction, model_params=No
         # split into input and output columns
         # trainX, trainy = train[:, :-1], train[:, -1]
         trainX, trainy = train[:, :n_in], train[:, -1]
-        model = Sequential()
-        model.add(Dense(100, activation="relu", input_dim=n_in))
-        model.add(Dense(1))
-        # model.add(Dense(predict_next_n_days))
+        model = Sequential(
+            [
+                Dense(100, activation="relu", input_dim=n_in),
+                Dense(1),
+            ]
+        )
+
+        # model = Sequential()
+        # model.add(Dense(100, activation="relu", input_dim=n_in))
+        # model.add(Dense(1))
         model.compile(optimizer="adam", loss="mse")
         # fit model
-        model.fit(trainX, trainy, epochs=epoch, verbose=0)
+        hist = model.fit(trainX, trainy, epochs=epoch, verbose=1, callbacks=[WandbCallback()])
         # make a one-step prediction
         yhat = model.predict(asarray([testX]))
-        return yhat.reshape(-1)
+
+        wandb.log({'last_window_step_loss': hist.history['loss'][-1]})
+        output = {
+                "yhat": yhat.reshape(-1),
+                "hist": hist,
+                }
+        # return yhat.reshape(-1)
+        return output
 
     n_steps_in, n_steps_out = n_in, n_out
     case_by_date_per_states = df_by_date[df_by_date["state"] == state]
@@ -86,7 +105,7 @@ def mlp_model(data, state, n_in,n_out, is_multi_step_prediction, model_params=No
     #         data, round(case_by_date_florida_np.shape[0] * 0.15), mlp_forecast, n_steps_in, n_steps_out
     #     )
 
-    data = series_to_supervised(case_by_date_per_states_np, n_in=n_steps_in, n_out=n_steps_out)
+    # data = series_to_supervised(case_by_date_per_states_np, n_in=n_steps_in, n_out=n_steps_out)
     n_test = round(case_by_date_florida_np.shape[0] * 0.15)
     train, test = train_test_split(data, n_test)
     if is_multi_step_prediction:
@@ -146,6 +165,21 @@ if __name__ == "__main__":
         'frame_pred_val_path' : FRAME_PRED_VAL_PATH,
         'plot_path' : PLOT_PATH,
     }
+    
+    # model_config_params = {
+    #         'Dense_1': {
+    #             'args': [100], 
+    #             'kwargs': {
+    #                 'activation':"relu",
+    #                 }
+    #             },
+    #         'Dense_2': {
+    #             'args': [],
+    #             'kwargs': {}
+    #             }
+    #         ]
+    # }
 
     # gamma_apply_model_to_all_states(obj={'non_cli_params': non_cli_params})
     delta_apply_model_to_all_states(obj={'non_cli_params': non_cli_params})
+    # delta_apply_model_to_all_states(obj={'non_cli_params': non_cli_params, 'model_config_params': model_config_params})

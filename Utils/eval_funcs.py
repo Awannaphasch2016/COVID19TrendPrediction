@@ -184,13 +184,15 @@ def gamma_walk_forward_validation(train,test, testX, testy, n_test, model_foreca
     for i in range(len(test)):
         assert testX[i].shape[0] + testy[i].shape[0] == test.shape[1], 'multi-step splitting is not correct'
         # fit model on history and make a prediction
-        yhat = model_forecast(history, testX[i])
+        # yhat = model_forecast(history, testX[i])
+        model_output = model_forecast(history, testX[i])
+        output_yhat = model_output['yhat']
         # store forecast in list of predictions
-        predictions.append(yhat)
+        predictions.append(output_yhat)
         # add actual observation to history for the next loop
         history.append(test[i])
         # summarize progress
-        print(f">\n\texpected={testy[i]}\n\tpredicted={yhat}")
+        print(f">\n\texpected={testy[i]}\n\tpredicted={output_yhat}")
     mse_val = mse(testy, predictions)
     mape_val = mape(testy, predictions)
     rmse_val = rmse(testy, predictions)
