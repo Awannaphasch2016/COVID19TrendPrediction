@@ -181,4 +181,6 @@ if __name__ == "__main__":
         'plot_path' : PLOT_PATH,
     }
 
-    gamma_apply_model_to_all_states(obj={'non_cli_params': non_cli_params})
+    # gamma_apply_model_to_all_states(obj={'non_cli_params': non_cli_params})
+    delta_apply_model_to_all_states(obj={'non_cli_params': non_cli_params})
+l

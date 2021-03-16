@@ -44,9 +44,14 @@ def apply_model(state, ctx, **kwargs):
     else:
         os.environ['WANDB_MODE'] = 'dryrun'
 
+    model_config = {} 
+    if model_param_epoch is not None:
+        model_config['epoch'] = model_param_epoch
+
     model_params = {}
     if model_param_epoch is not None:
-        model_params['epoch'] = model_param_epoch
+        model_params['epoch'] = model_config['epoch']
+
     multi_step_folder = 'MultiStep' if is_multi_step_prediction else 'OneStep'
     model_params_list = ['']
     if len(model_params.keys()) > 0:
@@ -54,21 +59,19 @@ def apply_model(state, ctx, **kwargs):
             model_params_list.append(f'{key}={value}')
     model_params_str = '_'.join(model_params_list)
 
-
-    model_config = {} 
-    if model_param_epoch is not None:
-        model_config['epoch'] = model_param_epoch
+    i = state
 
     wandb_config = {
             'multi_step_folder': multi_step_folder,
             'PredictNextN': f'PredictNext{n_out}',
             'WindowLengthN': f'WindowLength{n_in}',
-            i: i,
+            'state': i,
             'model_name': model_name,
             }
 
     if len(model_config) > 0:
         wandb_config.update(model_config)
+
     
     config_kwargs = {
         'project': PROJECT_NAME,
@@ -80,22 +83,21 @@ def apply_model(state, ctx, **kwargs):
             'Models',
             'Performances',
             'Baselines',
-            wandb_config[multi_step_folder],
+            wandb_config['multi_step_folder'],
             wandb_config[f'PredictNextN'],
             wandb_config['WindowLengthN'],
-            wandb_config[i],
+            wandb_config['state'],
             wandb_config['model_name'],
             ],
         'name': model_name + model_params_str,
         'config': wandb_config
         }
 
-    i = state
-
     with wandb.init(**config_kwargs) as run:
         # cur_val, pred_val, eval_metric_df = model(data,i, n_in, n_out, is_multi_step_prediction)
         try:
-            cur_val, pred_val, eval_metric_df = model(data,i, n_in, n_out, is_multi_step_prediction, model_params)
+            # cur_val, pred_val, eval_metric_df = model(data,i, n_in, n_out, is_multi_step_prediction, model_params)
+            cur_val, pred_val, eval_metric_df = model(data,i, n_in, n_out, is_multi_step_prediction, wandb.config)
         except TypeError:
             assert len(model_params.keys()) == 0, f'{model_name} doesn"t accept any model_params.'
             cur_val, pred_val, eval_metric_df = model(data,i, n_in, n_out, is_multi_step_prediction)
@@ -241,7 +243,7 @@ def gamma_apply_model_to_all_states_no_click(ctx, **kwargs):
                 'multi_step_folder': multi_step_folder,
                 'PredictNextN': f'PredictNext{n_out}',
                 'WindowLengthN': f'WindowLength{n_in}',
-                i: i,
+                'state': i,
                 'model_name': model_name,
                 }
 
@@ -264,7 +266,7 @@ def gamma_apply_model_to_all_states_no_click(ctx, **kwargs):
                 wandb_config['multi_step_folder'],
                 wandb_config[f'PredictNextN'],
                 wandb_config['WindowLengthN'],
-                wandb_config[i],
+                wandb_config['state'],
                 wandb_config['model_name'],
                 ],
             'name': model_name + model_params_str,
