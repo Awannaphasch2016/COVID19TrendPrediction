@@ -173,10 +173,12 @@ def apply_model(state, ctx, **kwargs):
 @click.option('--plot', type=int)
 @click.option('--model_param_epoch', type=int)
 @click.option('--is_distributed', is_flag=True)
+@click.option('--num_gpus', type=int)
+@click.option('--num_cpus', type=int)
 @click.pass_context
 def delta_apply_model_to_all_states(ctx, **kwargs):
     if kwargs['is_distributed']:
-        ray.init()
+        ray.init(num_gpus=kwargs['num_gpus'], num_cpus=kwargs['num_cpus'])
         futures = [apply_model.remote(i, ctx, **kwargs) for i in all_states]
         ray.get(futures)
     else:
