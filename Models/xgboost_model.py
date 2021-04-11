@@ -39,7 +39,13 @@ def xgboost_model(data, state, n_in, n_out, is_multi_step_prediction):
         # make a one-step prediction
         yhat = model.predict(asarray([testX]))
         # return yhat[0]
-        return yhat.reshape(-1)
+        output = {
+                "yhat": yhat.reshape(-1),
+                # "hist": hist,
+                }
+
+        # return yhat.reshape(-1)
+        return output
 
 
     # data = series_to_supervised(case_by_date_florida_np, n_in=6)
@@ -81,31 +87,7 @@ def xgboost_model(data, state, n_in, n_out, is_multi_step_prediction):
     return y, yhat, eval_metric_df
 
 if __name__ == "__main__":
-        
-    # apply_model_to_all_states(
-    #     df_by_date,
-    #     (xgboost_model, 'xgboost_model'),
-    #     BASEPATH,
-    #     FRAME_PERFORMANCE_PATH,
-    #     FRAME_PRED_VAL_PATH,
-    #     PLOT_PATH,
-    #     test_mode=False,
-    #     # test_mode=True,
-    # )
 
-    # beta_apply_model_to_all_states(
-    #     df_by_date,
-    #     (xgboost_model, 'xgboost_model'),
-    #     6,
-    #     5,
-    #     False,
-    #     BASEPATH,
-    #     FRAME_PERFORMANCE_PATH,
-    #     FRAME_PRED_VAL_PATH,
-    #     PLOT_PATH,
-    #     test_mode=False,
-    #     # test_mode=True,
-    # )
     non_cli_params = {
         'data': df_by_date,
         'model' : (xgboost_model, 'xgboost_model'),
@@ -115,4 +97,5 @@ if __name__ == "__main__":
         'plot_path' : PLOT_PATH,
     }
 
-    gamma_apply_model_to_all_states(obj={'non_cli_params': non_cli_params})
+    # gamma_apply_model_to_all_states(obj={'non_cli_params': non_cli_params})
+    delta_apply_model_to_all_states(obj={'non_cli_params': non_cli_params})

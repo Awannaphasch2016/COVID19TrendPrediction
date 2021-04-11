@@ -1,0 +1,12 @@
+digraph {
+  dataset [label = "us-state"] ;
+  clustering [label=<cluter algo: KNN_DTW<BR />
+    <FONT POINT-SIZE="10">cluster covid states cases into groups </FONT>>];
+  model_1 [label = "model: mlp_epoch=500"] ;
+  transfer_learning [label = "transfer learning"]
+  dataset -> clustering; 
+  clustering -> model_1 [label="For each cluster, select any time-series member of to applpy model to"];
+  model_1 -> transfer_learning [label="apply transfer learning to other member of the group."];
+}
+
+

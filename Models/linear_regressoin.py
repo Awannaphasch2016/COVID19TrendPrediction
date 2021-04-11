@@ -44,8 +44,12 @@ def linear_regression_model(data, state, n_in, n_out, is_multi_step_prediction):
         model.fit(trainX, trainy)
         # make a one-step prediction
         yhat = model.predict(asarray([testX]))
+        output = {
+                "yhat": yhat.reshape(-1),
+                }
         # return yhat[0]
-        return yhat.reshape(-1)
+        # return yhat.reshape(-1)
+        return output
 
     # data = series_to_supervised(case_by_date_florida_np, n_in=6)
     # mse_val, mape_val, rmse_val, r2_val, y, yhat = walk_forward_validation(
@@ -89,31 +93,6 @@ def linear_regression_model(data, state, n_in, n_out, is_multi_step_prediction):
 
 
 if __name__ == "__main__":
-    
-    # apply_model_to_all_states(
-    #     df_by_date,
-    #     (linear_regression_model, 'linear_regression'),
-    #     BASEPATH,
-    #     FRAME_PERFORMANCE_PATH,
-    #     FRAME_PRED_VAL_PATH,
-    #     PLOT_PATH,
-    #     test_mode=False,
-    # )
-
-    # beta_apply_model_to_all_states(
-    #     df_by_date,
-    #     (linear_regression_model, 'linear_regression'),
-    #     6,
-    #     7,
-    #     # True,
-    #     False,
-    #     BASEPATH,
-    #     FRAME_PERFORMANCE_PATH,
-    #     FRAME_PRED_VAL_PATH,
-    #     PLOT_PATH,
-    #     test_mode=False,
-    #     # test_mode=True,
-    # )
 
     non_cli_params = {
         'data': df_by_date,
@@ -124,4 +103,5 @@ if __name__ == "__main__":
         'plot_path' : PLOT_PATH,
     }
 
-    gamma_apply_model_to_all_states(obj={'non_cli_params': non_cli_params})
+    # gamma_apply_model_to_all_states(obj={'non_cli_params': non_cli_params})
+    delta_apply_model_to_all_states(obj={'non_cli_params': non_cli_params})

@@ -19,20 +19,6 @@ from Utils.modelling import *
 from wandb.keras import WandbCallback
 import wandb
 
-# # split a univariate sequence into samples
-# def split_sequence(sequence, n_steps):
-#     X, y = list(), list()
-#     for i in range(len(sequence)):
-#         # find the end of this pattern
-#         end_ix = i + n_steps
-#         # check if we are beyond the sequence
-#         if end_ix > len(sequence) - 1:
-#             break
-#         # gather input and output parts of the pattern
-#         seq_x, seq_y = sequence[i:end_ix], sequence[end_ix]
-#         X.append(seq_x)
-#         y.append(seq_y)
-#     return array(X), array(y)
 
 def lstm_model(data,state, n_in,n_out, is_multi_step_prediction, model_params=None):
     assert 'epoch' in list(model_params.keys())
@@ -148,30 +134,6 @@ def lstm_model(data,state, n_in,n_out, is_multi_step_prediction, model_params=No
     return y, yhat, eval_metric_df
 
 if __name__ == "__main__":
-        
-    # apply_model_to_all_states(
-    #     df_by_date,
-    #     (lstm_model, 'lstm'),
-    #     BASEPATH,
-    #     FRAME_PERFORMANCE_PATH,
-    #     FRAME_PRED_VAL_PATH,
-    #     PLOT_PATH,
-    #     test_mode=True,
-    # )
-
-    # beta_apply_model_to_all_states(
-    #     df_by_date,
-    #     (lstm_model, 'lstm'),
-    #     6,
-    #     7,
-    #     BASEPATH,
-    #     FRAME_PERFORMANCE_PATH,
-    #     FRAME_PRED_VAL_PATH,
-    #     PLOT_PATH,
-    #     test_mode=False,
-    #     # test_mode=True,
-    # )
-
     non_cli_params = {
         'data': df_by_date,
         'model' : (lstm_model, 'lstm'),
@@ -183,4 +145,3 @@ if __name__ == "__main__":
 
     # gamma_apply_model_to_all_states(obj={'non_cli_params': non_cli_params})
     delta_apply_model_to_all_states(obj={'non_cli_params': non_cli_params})
-l

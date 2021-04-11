@@ -8,7 +8,6 @@ from Utils.utils import *
 import wandb
 
 data_path = 'Data/Raw/COVID19Cases/StateLevels/us-states.csv'
-
 # # ==wandb
 # # os.environ['WANDB_MODE'] = 'dryrun'
 # # Start a new run, tracking hyperparameters in config
@@ -40,6 +39,8 @@ df_by_date = pd.DataFrame(
     .sort_values()
     .reset_index()
 )
+
+# df_by_date.to_csv('Data/Processed/COVID19Cases/StateLevels/us-states_groupby_state_date.csv')
 
 all_states = df_by_date["state"].unique()
 

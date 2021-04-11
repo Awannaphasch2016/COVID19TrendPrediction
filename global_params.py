@@ -3,9 +3,18 @@ import pathlib
 from pathlib import Path
 
 PROJECT_NAME = 'COVID19TrendPrediction'
+DATASETS_DICT = {
+        'COVID19Cases/StateLevels/us-states': 'COVID19Cases/StateLevels/us-states',
+        }
 
 ALL_METRICS = ['mse', 'rmse', 'r2score', 'mape']
-ALL_BASELINES_MODELS = ['mlp', 'linear regression', 'xgboost','previous_day', 'lstm']
+ALL_BASELINES_MODELS = [
+        'mlp',
+        'linear regression', 'linear_regression',
+        'xgboost', 'xgboost_model',
+        'previous_day',
+        'lstm'
+        ]
 
 HOME_PATH = str(Path.home())
 PROJECT_PATH = 'Documents/Working/COVID19TrendPrediction'

@@ -94,7 +94,11 @@ def mlp_model(data, state, n_in,n_out, is_multi_step_prediction, model_params=No
         "float"
     )
     case_by_date_per_states_np = np.reshape(case_by_date_per_states_np, (-1, 1))
+    ## here> datat is not used. everything started with df_by_date
+    ### dataset -> tell which state will be used for prediction
+    ###data 
     data = series_to_supervised(case_by_date_per_states_np, n_in=n_steps_in, n_out=n_steps_out)
+    serie
 
     # if is_multi_step_prediction:
     #     mse_val, mape_val, rmse_val, r2_val, y, yhat = beta_walk_forward_validation(
@@ -128,35 +132,6 @@ def mlp_model(data, state, n_in,n_out, is_multi_step_prediction, model_params=No
 
 
 if __name__ == "__main__":
-
-    # apply_model_to_all_states(
-    #     df_by_date,
-    #     (mlp_model, 'mlp'),
-    #     BASEPATH,
-    #     FRAME_PERFORMANCE_PATH,
-    #     FRAME_PRED_VAL_PATH,
-    #     PLOT_PATH,
-    #     test_mode=False,
-    # )
-
-
-    # beta_apply_model_to_all_states(
-    #     df_by_date,
-    #     (mlp_model, 'mlp'),
-    #     6,
-    #     7,
-    #     # True,
-    #     False,
-    #     BASEPATH,
-    #     FRAME_PERFORMANCE_PATH,
-    #     FRAME_PRED_VAL_PATH,
-    #     PLOT_PATH,
-    #     test_mode=False,
-    #     # test_mode=True,
-    # )
-
-    # model_parmas = {'epoch'}
-
     non_cli_params = {
         'data': df_by_date,
         'model' : (mlp_model, 'mlp'),
