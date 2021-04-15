@@ -28,7 +28,8 @@ BASEPATH = os.path.dirname(os.path.realpath(__file__))
 FRAME_PERFORMANCE_PATH = "/Outputs/Models/Performances/Baselines/{}/PredictNext{}/WindowLength{}/{}/{}_{}_performance.csv"
 FRAME_PRED_VAL_PATH = "/Outputs/Models/Performances/Baselines/{}/PredictNext{}/WindowLength{}/{}/{}_{}_pred_val.csv"
 PLOT_PATH =  "/Outputs/Models/Performances/Baselines/{}/PredictNext{}/WindowLength{}/{}/Images/{}_{}_forcasting.jpg"
-CHECKPOINTS_PATH = "/Outputs/Models/Checkpoints"
+# CHECKPOINTS_PATH = "/Outputs/ModelsCheckpoints"
+CHECKPOINTS_PATH =  "/Outputs/Models/Performances/Baselines/{}/PredictNext{}/WindowLength{}/{}/ModelCheckpoints/{}/{}/{}"
 SCRATCHES_OUTPUT_PATH = '/Outputs/Scratches'
 
 

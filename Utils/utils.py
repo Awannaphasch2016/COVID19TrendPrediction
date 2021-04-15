@@ -6,6 +6,8 @@ import click
 def add_file_suffix(file_path, file_suffix):
     if len(file_path.split('.')) == 2:
         file_path = file_path.split('.')[0] + file_suffix + '.' + file_path.split('.')[-1]
+    elif len(file_path.split('.')) == 1:
+        file_path = file_path.split('.')[0] + file_suffix 
     else:
         raise NotImplementedError
     return file_path

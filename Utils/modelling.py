@@ -23,7 +23,7 @@ def prepare_apply_model(ctx, **kwargs):
 
     data                   = non_cli_params['data']
     model                  = non_cli_params['model']
-    base_path              = non_cli_params['data']
+    # base_path              = non_cli_params['data']
     frame_performance_path = non_cli_params['frame_performance_path']
     frame_pred_val_path    = non_cli_params['frame_pred_val_path']
     plot_path              = non_cli_params['plot_path']
@@ -89,7 +89,7 @@ def main_apply_model(i, prepared_apply_model_params, ctx, **kwargs):
 
     data                   = non_cli_params['data']
     model                  = non_cli_params['model']
-    base_path              = non_cli_params['data']
+    # base_path              = non_cli_params['data']
     frame_performance_path = non_cli_params['frame_performance_path']
     frame_pred_val_path    = non_cli_params['frame_pred_val_path']
     plot_path              = non_cli_params['plot_path']
@@ -106,9 +106,11 @@ def main_apply_model(i, prepared_apply_model_params, ctx, **kwargs):
 
     model, model_name = model
 
-
     model_metadata_list.append(i)
     model_metadata_str = '_'.join(model_metadata_list)
+
+    # TMP: 
+    dataset_full = 'us_state_rate_of_change_melted'
 
     wandb_config = {
             'multi_step_folder': multi_step_folder,
@@ -143,13 +145,14 @@ def main_apply_model(i, prepared_apply_model_params, ctx, **kwargs):
         'name': model_name + model_metadata_str + model_params_str,
         'config': wandb_config
         }
-
+    
     with wandb.init(**config_kwargs) as run:
         try:
-            cur_val, pred_val, eval_metric_df = model(data,i, n_in, n_out, is_multi_step_prediction, wandb.config)
+            cur_val, pred_val, eval_metric_df = model(data,i, n_in, n_out, is_multi_step_prediction,
+                     model_metadata_str, model_params_str, wandb.config )
         except TypeError:
             assert len(model_params.keys()) == 0, f'{model_name} doesn"t accept any model_params.'
-            cur_val, pred_val, eval_metric_df = model(data,i, n_in, n_out, is_multi_step_prediction)
+            cur_val, pred_val, eval_metric_df = model(data,i, n_in, n_out, is_multi_step_prediction) 
         except Exception as e:
             raise ValueError(e)
 
@@ -243,6 +246,14 @@ def delta_apply_model_to_all_states(ctx, **kwargs):
     ctx.obj['non_cli_params']['model_type'] = model_type
     # ctx.obj['non_cli_params']['dataset'] = DATASETS_DICT['COVID19Cases/StateLevels/us-states']
     ctx.obj['non_cli_params']['dataset'] = kwargs['data']
+
+    # print(DATASETS_DICT['COVID19Cases/StateLevels/us-states'])
+    # print(kwargs['data'])
+    # print('done')
+    # exit()
+
+    # TMP:
+    all_states = ['Florida', 'Louisiana', 'Tennessee', 'Oklahoma']
 
     if kwargs['is_distributed']:
         ray.init(num_gpus=kwargs['num_gpus'], num_cpus=kwargs['num_cpus'])

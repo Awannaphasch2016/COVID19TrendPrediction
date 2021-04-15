@@ -1,4 +1,4 @@
-# univariate mlp example
+
 from numpy import array
 
 # from tensorflow.keras.models import Sequential

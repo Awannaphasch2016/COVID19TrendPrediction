@@ -1,222 +1,172 @@
+# from Momels.Preprocessing.us_state import *
+
+import pandas as pd 
+import numpy as np
+from pathlib import Path
+from tslearn.generators import random_walks
+from tslearn.clustering import TimeSeriesKMeans
+from tslearn.utils import to_time_series_dataset
+
+path = 'Experiments/Experiment2/'
+base = Path.cwd()
+cur_path = base /'Experiments/Experiment2/'
+
+df_by_date = pd.read_csv(str(cur_path / 'Data/us_state_clean.csv'), index_col=False)
+case_by_date_florida = pd.read_csv(str(cur_path /"Data/fl_case.csv"), index_col=False)
+
+groupby_states_rate_of_change = pd.read_csv(str(cur_path /'Data/us_state_rate_of_change.csv'))
+groupby_states_rate_of_change_melted = pd.read_csv(str(cur_path /'Data/us_state_rate_of_change_melted.csv'))
+groupby_states_rate_of_change.set_index(groupby_states_rate_of_change.columns[0], inplace=True)
+groupby_states_rate_of_change.replace(np.nan,0, inplace=True) groupby_states_rate_of_change_np =
+groupby_states_rate_of_change.to_numpy().astype('float').T
+
+# groupby_states_rate_of_change_rolling_mean = groupby_states_rate_of_change.rolling(2).mean()
+# groupby_states_rate_of_change_rolling_mean.to_csv(str(cur_path /'Data/us_state_rate_of_change_rolling_mean.csv'))
+groupby_states_rate_of_change_rolling_mean_melted = pd.read_csv(str(cur_path
+    /'Data/us_state_rate_of_change_rolling_mean_melted.csv'), index_col=False)
+groupby_states_rate_of_change_rolling_mean_melted.set_index(groupby_states_rate_of_change_rolling_mean_melted.columns[0],
+        inplace=True)
+groupby_states_rate_of_change_rolling_mean_melted['roc_rolling_mean'] = groupby_states_rate_of_change_rolling_mean_melted['roc_rolling_mean'].astype('float')
+
+
+## Error: there 1 nan value. I am not sure how nan is computed, but I replace nan with 0 for wpnow
+
+
+
+groupby_states = df_by_date.groupby('state')["cases"].apply(np.array)
+all_states = groupby_states.index.to_numpy()
+groupby_states_np =  groupby_states.to_numpy()
+states_ts_len = np.array([groupby_states_np[i].shape[0] for i in range(groupby_states_np.shape[0])])
+max_states_ts_len = states_ts_len.max()
+
+states_pad_len = max_states_ts_len - states_ts_len
+left_padded_states_ts = np.array([np.hstack((np.zeros(p), groupby_states_np[i])) for i, p in enumerate(states_pad_len)])
+# groupby_states_np_ts  = to_time_series_dataset(groupby_states_np) # each instance needs to be aligned by date
+
+# ## raw case data
+# tmp = left_padded_states_ts[:, states_pad_len.max():]
+# groupby_states_np_ts = to_time_series_dataset(tmp) # each instance needs to be aligned by date
+# # align time series
+# groupby_states_np_ts[:, states_pad_len.max():]
+
+### rate of change data 
+
+groupby_states_np_ts = to_time_series_dataset(groupby_states_rate_of_change_np) # each instance needs to be aligned by date
+
+
+######## Plotting
+
+# import seaborn as sns
+# import matplotlib.pyplot as plt
+# import numpy as np
+# sns.set_theme(style="darkgrid")
+# # tips = sns.load_dataset("tips")
+# # tips['index'] = np.arange(tips.shape[0])
+# # ax = sns.pointplot(x="tip", y="day", data=tips, join=False)
+# # ax = sns.lineplot(x="tip", y="sex", data=tips)
+# ax = sns.lineplot(x="date", y="cases",hue="state", data=df_by_date)
+# plt.savefig('us_states_cases.png')
+# plt.yscale('log')
+# plt.show()
+# exit()
+
+############# clustering
+# X = random_walks(n_ts=50, sz=32, d=1)
+tmp = groupby_states_np_ts
+n_clusters = 10
+km = TimeSeriesKMeans(n_clusters=n_clusters, metric="euclidean", max_iter=5,
+                      random_state=0).fit(tmp)
+
+# cluster_member_num = [ km.cluster_centers_[i].shape[0] for i in range(km.cluster_centers_.shape[0])]
+cluster_member_num = np.unique(km.labels_, return_counts=True)
+
+cluster_member_dict = {}
+for i in cluster_member_num[0]:
+    cluster_member_dict[i] = all_states[np.where(km.labels_ == i)[0]]
+
+km.cluster_centers_
+km.labels_
+km.inertia_
+
+####### plotting 
+########## rate of change 
+
+cluster_group = []
+for i in cluster_member_dict.keys():
+    tmp = df_by_date[df_by_date['state'].isin(cluster_member_dict[i])]
+    cluster_group.append(tmp)
+
+# cluster_1 = df_by_date[df_by_date['state'].isin(cluster_member_dict[0])]
+# cluster_2 = df_by_date[df_by_date['state'].isin(cluster_member_dict[1])]
+# cluster_3 = df_by_date[df_by_date['state'].isin(cluster_member_dict[2])]
+
+
 import seaborn as sns
 import matplotlib.pyplot as plt
-from pandas import read_csv
-from global_params import *
-from pprint import pprint
-from pandas import DataFrame, Series
-from pandas import concat
-from numpy import array
-from numpy import concatenate
-import click
+import numpy as np
 
-@click.group()
-@click.option('--is_multi_step_prediction', is_flag=True)
-@click.option('--save', is_flag=True)
-@click.option('--aggr', is_flag=True)
-@click.pass_context
-def run_func(ctx,**kwargs):
+# for i, ct in enumerate([cluster_1, cluster_2, cluster_3]):
+for i, ct in enumerate(cluster_group):
+    sns.set_theme(style="darkgrid")
+    ax = sns.lineplot(x="date", y="cases",hue="state", data=ct)
+    plt.title(f'cluster_{i}_{n_clusters}')
+    plt.yscale('log')
+    plt.savefig(str(cur_path/ f'Outputs/cluster_{i}_cases_groupby_rate_of_change_{n_clusters}.png'))
+    plt.close()
     
-    ctx.ensure_object(dict)
+####### plotting 
+########## cases groupby rate of change
 
-    # load_data_n              = kwargs['load_data_n']
-    ctx.obj['multi_step_folder'] = 'MultiStep' if kwargs['is_multi_step_prediction'] else 'OneStep'
-    ctx.obj['aggr_op']           = 'mean'
-    ctx.obj['save']              = kwargs['save']
-    ctx.obj['aggr']              = kwargs['aggr']
-    ctx.obj['plot_func']         = bar_plot
+cluster_group = []
+for i in cluster_member_dict.keys():
+    tmp = groupby_states_rate_of_change_melted[groupby_states_rate_of_change_melted['state'].isin(cluster_member_dict[i])]
+    cluster_group.append(tmp)
 
-@run_func.command()
-@click.argument('n_out')
-@click.argument('n_in')
-@click.pass_context
-def load_data_1(ctx, **kwargs):
-    """for each WindowLengthN and PredictNextN, x-axis = state and y-axis = mse."""
+# cluster_1 = df_by_date[df_by_date['state'].isin(cluster_member_dict[0])]
+# cluster_2 = df_by_date[df_by_date['state'].isin(cluster_member_dict[1])]
+# cluster_3 = df_by_date[df_by_date['state'].isin(cluster_member_dict[2])]
 
-    load_data_n       = 1
-    n_out             = kwargs['n_out']
-    n_in              = kwargs['n_in']
-    is_save           = ctx.obj['save']
-    is_aggr           = ctx.obj['aggr']
-    multi_step_folder = ctx.obj['multi_step_folder']
-    aggr_op           = ctx.obj['aggr_op']
-    plot_func         = ctx.obj['plot_func']
 
-    sns.set_theme(style="whitegrid")
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
 
-    # data = sns.load_dataset("tips")
+# for i, ct in enumerate([cluster_1, cluster_2, cluster_3]):
+for i, ct in enumerate(cluster_group):
+    sns.set_theme(style="darkgrid")
+    # ax = sns.lineplot(x="date", y="cases",hue="state", data=ct)
+    ax = sns.lineplot(x="date", y="roc",hue="state", data=ct)
+    plt.title(f'cluster_{i}_{n_clusters}')
+    plt.yscale('log')
+    plt.savefig(str(cur_path/ f'Outputs/cluster_{i}_rate_of_change_{n_clusters}.png'))
+    plt.close()
+    # plt.show()
 
-    file_path ='Outputs/DrZhu/all_performance_table_df_1.csv'
-    data = read_csv(str(Path(BASEPATH) / file_path))
-    models_num = data.shape[1] -1
-    new_cols = data.columns.tolist()
-    new_cols[0] = 'state'
-    data.columns =  new_cols
-    data_dict = data.to_dict()
+###### plotting 
+######### cases groupby rate of change + rolling mean 
 
-    all_model_mse = []
-    all_states = []
-    for i, (key, val) in enumerate(data_dict.items()):
-        if key != 'state':
-            col_1 = {'model': [key for _ in  list(val.keys())]}
-            col_2 = {'mse': list(val.values())}
+cluster_group = []
+for i in cluster_member_dict.keys():
+    tmp = groupby_states_rate_of_change_rolling_mean_melted[groupby_states_rate_of_change_rolling_mean_melted['state'].isin(cluster_member_dict[i])]
+    cluster_group.append(tmp)
 
-            # col_1 = [key for _ in  list(val.keys())]
-            # col_2 = list(val.values())
-            col_np = array([col_1['model'], col_2['mse']]).T
-            # print(col_1)
-            # print(col_2)
-            all_model_mse.append(col_np)
-        else:
-            col_1 = {'state': [key for key in  list(val.values())]}
-            all_states = list(col_1.values())
+# cluster_1 = df_by_date[df_by_date['state'].isin(cluster_member_dict[0])]
+# cluster_2 = df_by_date[df_by_date['state'].isin(cluster_member_dict[1])]
+# cluster_3 = df_by_date[df_by_date['state'].isin(cluster_member_dict[2])]
 
-    all_model_mse_np = array(all_model_mse).reshape(-1,2)
-    all_states_np = array(all_states * models_num).reshape(-1, 1)
 
-    all_col_names = ['state','model', 'mse']
-    all_model_state_mse_np = concatenate([all_states_np, all_model_mse_np], axis=1)
-    all_model_state_mse_df = DataFrame(all_model_state_mse_np, columns=all_col_names)
-    all_model_state_mse_df = all_model_state_mse_df.astype({all_col_names[-1]: float})
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
 
-    plot_kwargs = {
-            'load_data_n': load_data_n,
-            'multi_step_folder': multi_step_folder,
-            'n_out':             n_out,
-            'n_in':              n_in,
-            'x':                 'state',
-            'y':                 'mse',
-            'hue':               'model',
-            }
-
-    save_path = 'Outputs/DrZhu/load_data_n/load_data_{}/{}/PredictNext{}/WindowLength{}/Images/barplot_{}_{}_{}.png'
-
-    data = all_model_state_mse_df
-    plot_func(data, save_path, is_save, plot_kwargs)
-
-    # return all_model_state_mse_df,save_path, plot_kwargs
-
-@run_func.command()
-@click.pass_context
-def load_data_2(ctx, **kwargs):
-    """for each PredictNextN, x-axis = WindowLengthN and y-axis = mse."""
-    raise NotImplementedError 
-
-    # is_multi_step_prediction = kwargs['is_multi_step_prediction']
-    # is_save                  = kwargs['save']
-    # is_aggr                  = kwargs['aggr']
-    # multi_step_folder        = ctx.obj['multi_step_folder']
-    # aggr_op                  = ctx.obj['aggr_op']
-
-    # print(kwargs)
-    # print(ctx.obj)
-    # print('done')
-    # exit()
-
-    # dir_path = 'Outputs/Performances/Baselines/{}/PredictNext{}'
-    
-    # for n_out in ALL_PREDICTNEXTN:
-    #     dir_path = Path(BASEPATH + dir_path.format(multi_step_folder, n_out))
-    #     print(dir_path)
-    #     exit()
-    #     for p in path.rglob("*performance.csv"):
-    #          print(p.name) 
-
-@run_func.command()
-@click.pass_context
-def load_data_3(ctx, **kwargs):
-    """for each WindowLengthN, x-axis = PredictNextN and y-axis = mse."""
-
-    is_save                  = ctx.obj['save']
-    is_aggr                  = ctx.obj['aggr']
-    multi_step_folder        = ctx.obj['multi_step_folder']
-    aggr_op                  = ctx.obj['aggr_op']
-
-    all_predictnext_n_aggr_performance = {}
-
-    for n_out in ALL_PREDICTNEXTN:
-        dir_path = 'Outputs/DrZhu/{}/PredictNext{}'
-        dir_path = Path(BASEPATH) / dir_path.format(multi_step_folder, n_out)
-        # for p in dir_path.rglob("*performance.csv"):
-        # print(dir_path)
-        # print(dir_path.exists())
-        for p in dir_path.rglob(f"*df_{aggr_op}.csv"):
-            df = read_csv(p)
-            new_cols = df.columns.to_list()
-            new_cols.append('n_out')
-            print(new_cols)
-            new_vals = df.values.tolist()
-            new_vals.append(n_out)
-            print(new_vals)
-            exit()
-            all_predictnext_n_aggr_performance.setdefault(n_out, []).append(df)
-
-    data = concat([*all_predictnext_n_aggr_performance[1]])
-    # print(data)
-
-    print('===========')
-    # file_path ='Outputs/DrZhu/all_performance_table_df_1.csv'
-    # data = read_csv(str(Path(BASEPATH) / file_path))
-    # print(data)
-    models_num = data.shape[1] -1
-    new_cols = data.columns.tolist()
-    # new_cols[0] = 'state'
-    new_cols[0] = 'aggr'
-    data.columns =  new_cols
-    data_dict = data.to_dict()
-
-    all_model_mse = []
-    all_states = []
-    pprint(data_dict)
-    for i, (key, val) in enumerate(data_dict.items()):
-        if key != 'aggr':
-            col_1 = {'model': [key for _ in  list(val.keys())]}
-            col_2 = {'mse': list(val.values())}
-
-            # col_1 = [key for _ in  list(val.keys())]
-            # col_2 = list(val.values())
-            col_np = array([col_1['model'], col_2['mse']]).T
-            # print(col_1)
-            # print(col_2)
-            all_model_mse.append(col_np)
-        else:
-            col_1 = {data.columns[0]: [key for key in  list(val.values())]}
-            all_states = list(col_1.values())
-
-    all_model_mse_np = array(all_model_mse).reshape(-1,2)
-    all_states_np = array(all_states * models_num).reshape(-1, 1)
-
-    all_col_names = [data.columns[0],'model', 'mse']
-    all_model_state_mse_np = concatenate([all_states_np, all_model_mse_np], axis=1)
-    all_model_state_mse_df = DataFrame(all_model_state_mse_np, columns=all_col_names)
-    all_model_state_mse_df = all_model_state_mse_df.astype({all_col_names[-1]: float})
-    print(all_model_state_mse_df)
-    print('done')
-
-def bar_plot(data, save_path, is_save, plot_kwargs):
-
-    sns.set(font_scale=0.5)
-    sns.set(rc={'figure.figsize':(20,13)})
-
-    ax = sns.barplot(x=plot_kwargs['x'], y=plot_kwargs['y'], hue=plot_kwargs['hue'], data=data)
-
-    # save_path = '<Onestep>/<PredictNextN>/<WindowLengthN>/Image/barplot_<x-axis>_<y-axis>_<legend>'
-    # save_path = 'Outputs/DrZhu/load_data_n/load_data_{}/{}/PredictNext{}/WindowLength{}/Images/barplot_{}_{}_{}.png'.format(*list(plot_kwargs.values()))
-    save_path = save_path.format(*list(plot_kwargs.values()))
-    # # print(Path(save_path).is_file())
-    # exit()
-    for item in ax.get_xticklabels():
-        item.set_rotation(90)
-    ax.set_yscale('log')
-    Path(save_path).parents[0].mkdir(parents=True,exist_ok=True)
-    print('=============================')
-    if is_save:
-        print(f'save bar plot to {save_path}')
-        plt.savefig(save_path)
-    else:
-        print('bar plot is not saved')
-    print('=============================')
-    plt.show()
-
-if __name__ == '__main__':
-    run_func()
+# for i, ct in enumerate([cluster_1, cluster_2, cluster_3]):
+for i, ct in enumerate(cluster_group):
+    sns.set_theme(style="darkgrid")
+    # ax = sns.lineplot(x="date", y="cases",hue="state", data=ct)
+    ax = sns.lineplot(x="date", y="roc",hue="state", data=ct)
+    plt.title(f'cluster_{i}_{n_clusters}')
+    plt.yscale('log')
+    plt.savefig(str(cur_path/ f'Outputs/cluster_{i}_rate_of_change_{n_clusters}.png'))
+    plt.close()
+    # plt.show()
 
