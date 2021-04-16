@@ -7,7 +7,7 @@ plotly
 statsmodels
 scipy
 scikit-learn
-tensorflow
+tensorflow-gpu
 keras
 lazypredict
 hummingbird-ml
