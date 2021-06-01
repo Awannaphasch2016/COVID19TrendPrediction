@@ -1,0 +1,24 @@
+project_name: 'COVID19TrendPrediction'
+experiment:
+  0: 
+    name: forecasting raw cases
+    dataset_name: COVID19Cases/StateLevels/us-states
+  1: 
+    name: forecasting daily new cases 
+    dataset_name: COVID19Cases/StateLevels/us-states/daily-new-cases
+  2: 
+    name: forecasting diff2-daily new cases
+    dataset_name: COVID19Cases/StateLevels/us-states/diff2-daily-new-cases
+  3: 
+    name: forecasting diff3-daily new cases
+    dataset_name: COVID19Cases/StateLevels/us-states/diff3-daily-new-cases
+  4: 
+    name: forecasting straight line 
+    dataset_name: straight line 
+
+run_parameters:
+  experiment:
+    id: 0
+  repeat: 1
+  states: ['Oklahoma']
+  epoch: 18

@@ -3,11 +3,12 @@ import pandas as pd
 from keras.preprocessing.sequence import TimeseriesGenerator
 
 from global_params import *
-from Utils.preprocessing import *
-from Utils.utils import *
 import wandb
+from Utils.utils import *
+from Utils.preprocessing import *
 
 data_path = 'Data/Raw/COVID19Cases/StateLevels/us-states.csv'
+
 # # ==wandb
 # # os.environ['WANDB_MODE'] = 'dryrun'
 # # Start a new run, tracking hyperparameters in config
@@ -38,45 +39,29 @@ df_by_date = pd.DataFrame(
     .sum()
     .sort_values()
     .reset_index()
-)
+) 
+
+# import numpy as np
+# tmp = df_by_date['cases'].to_numpy()
+# tmp = np.diff(tmp,n=1)
+# daily_new_case_df_by_date = 1000
 
 # df_by_date.to_csv('Data/Processed/COVID19Cases/StateLevels/us-states_groupby_state_date.csv')
 
 all_states = df_by_date["state"].unique()
 
-# # get cases for each states
-# for i for all_states:
-#     case_by_date_per_states = df_by_date[df_by_date["state"] == i]
+# case_by_date_florida = df_by_date[df_by_date["state"] == "Florida"]
 
-case_by_date_florida = df_by_date[df_by_date["state"] == "Florida"]
-# print(case_by_date_florida)
-# print(case_by_date_florida.shape)
-# exit()
+# case_by_date_florida_np = case_by_date_florida.to_numpy()[
+#     :, 2:].astype("float")
+# case_by_date_florida_np = np.reshape(case_by_date_florida_np, (-1, 1))
 
-case_by_date_florida_np = case_by_date_florida.to_numpy()[
-    :, 2:].astype("float")
-# print(case_by_date_florida_np)
-# print(case_by_date_florida_np.shape)
-# exit()
+# case_by_date_florida_train, case_by_date_florida_test = split(
+#     case_by_date_florida_np)
+# generator_train = TimeseriesGenerator(
+#     case_by_date_florida_train, case_by_date_florida_train, length=n_input, batch_size=1
+# )
 
-case_by_date_florida_np = np.reshape(case_by_date_florida_np, (-1, 1))
-# print(NtsC.shape
-# exit()
-
-case_by_date_florida_train, case_by_date_florida_test = split(
-    case_by_date_florida_np)
-# print(case_by_date_florida_train.shape)
-# print(case_by_date_florida_test.shape)
-# exit()
-
-
-# test2 = np.reshape(test, (-1, 1))
-generator_train = TimeseriesGenerator(
-    case_by_date_florida_train, case_by_date_florida_train, length=n_input, batch_size=1
-)
-
-# test2 = np.reshape(test, (-1, 1))
-generator_test = TimeseriesGenerator(
-    case_by_date_florida_test, case_by_date_florida_test, length=n_input, batch_size=1
-)
-# print(list(generator))
+# generator_test = TimeseriesGenerator(
+#     case_by_date_florida_test, case_by_date_florida_test, length=n_input, batch_size=1
+# )

@@ -2,10 +2,10 @@ import os
 import pathlib
 from pathlib import Path
 
-PROJECT_NAME = 'COVID19TrendPrediction'
-DATASETS_DICT = {
-        'COVID19Cases/StateLevels/us-states': 'COVID19Cases/StateLevels/us-states',
-        }
+
+# DATASETS_DICT = {
+#         'COVID19Cases/StateLevels/us-states': 'COVID19Cases/StateLevels/us-states',
+#         }
 
 ALL_METRICS = ['mse', 'rmse', 'r2score', 'mape']
 ALL_BASELINES_MODELS = [
@@ -13,7 +13,8 @@ ALL_BASELINES_MODELS = [
         'linear regression', 'linear_regression',
         'xgboost', 'xgboost_model',
         'previous_day',
-        'lstm'
+        'lstm',
+        'conv1d'
         ]
 
 HOME_PATH = str(Path.home())

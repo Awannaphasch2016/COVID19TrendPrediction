@@ -1,0 +1,28 @@
+program: Models/conv1d.py
+method: bayes
+metric:
+  goal: minimize
+  name: mse.0
+parameters: 
+  epoch:
+    values: [10, 50, 100]
+
+command:
+  - ${env}
+  - python
+  - ${program}
+  - 14
+  - 1  
+  - --dont_create_new_model_on_each_run
+  - --is_test_environment 
+  - --train_model_with_1_run 
+  - --evaluate_on_many_test_data_per_run 
+  - --save_wandb
+
+# command:
+#   - ${env}
+#   - python
+#   - ${program}
+#   - 14
+#   - 1 
+#   - ${--model_param_epoch 10 --dont_create_new_model_on_each_run --is_test_environment --train_model_with_1_run --evaluate_on_many_test_data_per_run --states Oklahoma --experiment 4}

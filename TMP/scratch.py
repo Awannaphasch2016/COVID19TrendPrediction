@@ -1,87 +1,162 @@
+import wandb
+from global_params import *
 from Utils.eval_funcs import *
 from Utils.preprocessing import *
 from Utils.utils import *
 from Utils.plotting import *
 from Utils.modelling import *
-import click
-
-from wandb.keras import WandbCallback
-import wandb
-## raw data 
-import numpy as np
-import pandas as pd
-from keras.preprocessing.sequence import TimeseriesGenerator
-
-from global_params import *
-from Utils.preprocessing import *
-from Utils.utils import *
-import wandb
 
 
-data_path = 'Data/Raw/COVID19Cases/StateLevels/us-states.csv'
-# # ==wandb
-# # os.environ['WANDB_MODE'] = 'dryrun'
-# # Start a new run, tracking hyperparameters in config
-# run = wandb.init(project=PROJECT_NAME, 
-#     # group="OneStep/PredictNextN/WindowLengthN/state",
-#     name='data',
-#     save_code=True,
-#     job_type='dataset-creation',
-#     tags=['Data', 'Raw', 'COVID19Cases', 'StateLevels', 'us-states.csv'],
-# )
-# artifact = wandb.Artifact('Raw_COVID19Cases_StateLevels_us-states.csv', type='dataset')
-# artifact.add_file(data_path)
-# run.log_artifact(artifact)
-# wandb.finish()
+min_val = float('inf')
+max_val = float('-inf')
+# for i in range(df_by_date.to_numpy().shape[0]):
+for state in all_states:
+    tmp = df_by_date
+    case_by_date_per_states = tmp[tmp["state"] == state]
+    case_by_date_per_states = case_by_date_per_states.drop(['date', 'state'], axis=1)
+    case_by_date_per_states_np = case_by_date_per_states.to_numpy().astype("float")
+    case_by_date_per_states_np = np.reshape(case_by_date_per_states_np, (-1, 1))
+    if case_by_date_per_states_np.shape[0] < min_val:
+        min_val = case_by_date_per_states_np.shape[0] 
+    if case_by_date_per_states_np.shape[0] > max_val:
+        max_val = case_by_date_per_states_np.shape[0] 
 
-# ==params
-n_input = 5
-n_features = 1
+# all_states = ['Oklahoma']
+# all_states = ['Florida', 'Louisiana', 'Tennessee']
+all_states = ['Oklahoma']
 
-data = pd.read_csv(
-    # str(BASEPATH / pathlib.Path("Data/Raw/COVID19Cases/StateLevels/us-states.csv"))
-    str(BASEPATH / pathlib.Path(data_path))
-)  # (18824, 5)
+# here> get pred value on to the tracking 
+for state in all_states:
 
-df_by_date = pd.DataFrame(
-    data.fillna("NA")
-    .groupby(["state", "date"])["cases"]
-    .sum()
-    .sort_values()
-    .reset_index()
-)ase_by_date_per_states_np = case_by_date_per_states.to_numpy().astype("float")
+    tmp = df_by_date
 
-# VALIDATE: I have yet tested it throguhtly, if sorted will have any side effect, but it seems very safe.
-df_by_date = df_by_date.sort_values(by=['state', 'date'])
-case_by_date_florida = df_by_date[df_by_date["state"] == "Florida"]
-
-case_by_date_florida_np = case_by_date_florida.to_numpy()[:, 2:].astype("float")
+    case_by_date_per_states = tmp[tmp["state"] == state]
+    case_by_date_per_states = case_by_date_per_states.drop(['date', 'state'], axis=1)
+    case_by_date_per_states_np = case_by_date_per_states.to_numpy().astype("float")
+    case_by_date_per_states_np = np.reshape(case_by_date_per_states_np, (-1, 1))
 
 
-###### get rate_of_change data
-# tmp = df_by_date
-data_path = Path(BASEPATH) / 'Experiments/Experiment2/Data/us_state_rate_of_change_melted.csv'
-tmp = pd.read_csv(data_path)
-tmp = tmp.sort_values(by=['state', 'date'])
-# case_by_date_per_states = df_by_date[df_by_date["state"] == state]
-case_by_date_per_states = tmp[tmp["state"] == state]
-# case_by_date_per_states_np = case_by_date_per_states.to_numpy()[:, 2:].astype(
-#     "float"
-# )
+    stream = open("config.yaml", 'r')
+    project_config = yaml.load(stream)
 
-case_by_date_per_states = case_by_date_per_states.drop(['date', 'state'], axis=1)
+    experiment_id = 0
+    # experiment_id = 1
+    # experiment_id = 2
+    # experiment_id = 3
+    # experiment_id = 4
+    dataset_name = project_config['experiment'][experiment_id]['dataset_name']
+    experiment_name = project_config['experiment'][experiment_id]['name']
 
-case_by_date_per_states_np = np.reshape(case_by_date_per_states_np, (-1, 1))
-## here> datat is not used. everything started with df_by_date
+    if experiment_id == 0:
+        name = 'covid19case-raw data'
+    elif experiment_id == 1:
+
+        name = 'daily-new-covid19case-raw data'
+        # print(case_by_date_per_states_np[-10:])
+        case_by_date_per_states_np = np.diff(case_by_date_per_states_np, n=1, axis=0)
+        case_by_date_per_states_np = np.vstack(([[0]], case_by_date_per_states_np))
+        # print(case_by_date_per_states_np[-10:])
+        # print(case_by_date_per_states_np)
+        # exit()
+
+    elif experiment_id == 2:
+
+        name = 'diff2-daily-new-covid19case-raw data'
+        # print(case_by_date_per_states_np[-10:])
+        case_by_date_per_states_np = np.diff(case_by_date_per_states_np, n=1, axis=0)
+        case_by_date_per_states_np = np.vstack(([[0]], case_by_date_per_states_np))
+        case_by_date_per_states_np = np.diff(case_by_date_per_states_np, n=1, axis=0)
+        case_by_date_per_states_np = np.vstack(([[0]], case_by_date_per_states_np))
+        # print(case_by_date_per_states_np[-10:])
+        # print(case_by_date_per_states_np)
+        # exit()
+    elif experiment_id == 3:
+
+        name = 'diff3-daily-new-covid19case-raw data'
+        # print(case_by_date_per_states_np[-10:])
+        case_by_date_per_states_np = np.diff(case_by_date_per_states_np, n=1, axis=0)
+        case_by_date_per_states_np = np.vstack(([[0]], case_by_date_per_states_np))
+        case_by_date_per_states_np = np.diff(case_by_date_per_states_np, n=1, axis=0)
+        case_by_date_per_states_np = np.vstack(([[0]], case_by_date_per_states_np))
+        case_by_date_per_states_np = np.diff(case_by_date_per_states_np, n=1, axis=0)
+        case_by_date_per_states_np = np.vstack(([[0]], case_by_date_per_states_np))
+        # print(case_by_date_per_states_np[-10:])
+        # print(case_by_date_per_states_np)
+        # exit()
+    elif experiment_id == 4:
+
+        name = 'straight line data'
+        tmp = np.arange(1000).reshape(-1,1)
+        case_by_date_per_states = tmp 
+        case_by_date_per_states_np = tmp 
+    else:
+        raise NotImplementedError
+
+    # print(name)
+    # print(dataset_name)
+    # exit()
+
+    # case_by_date_per_states_np = case_by_date_per_states_np[:-min_val, :]
+    # print(case_by_date_per_states_np)
+
 ### dataset -> tell which state will be used for prediction
 ###data 
-n_in = 3
-n_out = 3 
-n_steps_in, n_steps_out = n_in, n_out
+    # data = series_to_supervised(case_by_date_per_states_np, n_in=n_steps_in, n_out=n_steps_out)
 
-data = series_to_supervised(case_by_date_per_states_np, n_in=n_steps_in, n_out=n_steps_out)
+    data  = case_by_date_per_states_np
 
-n_test = round(case_by_date_per_states.shape[0] * 0.15)
-train, test = train_test_split(data, n_test)
+    # print(data.shape)
+    # exit()
+
+    # split = 0.15
+    # n_test = round(case_by_date_per_states.shape[0] * split)
+    # train, test = train_test_split(data, n_test)
+    # print(train.shape)
+    # print(test.shape)
+    # exit()
 
 
+    wandb_config = {
+            'multi_step_folder': 'NA',
+            'PredictNextN': 'NA',
+            'WindowLengthN': 'NA',
+            'state': state,
+            'model_name': name,
+            # 'model_name': 'covid19case-raw data',
+            'model_type': name,
+            # 'dataset': 'COVID19Cases/StateLevels/us-states',
+            'dataset': dataset_name,
+            'env': 'NA',
+            'train_model_with_1_run': 'NA',
+            'dont_create_new_model_on_each_run': 'NA',
+            'evaluate_on_many_test_data_per_run': 'NA',
+            'experiment_id': experiment_id,
+            'experiment_name': experiment_name
+            }
+
+    wandb_tags = []
+
+    config_kwargs = {
+        'project': 'COVID19TrendPrediction',
+        'name': name,
+        'tags': { state, dataset_name},
+        # 'config': {"model_name": name}
+        'config': wandb_config
+        }
+
+    wandb.init(**config_kwargs) 
+
+    start = max_val - data.shape[0]
+    for i in range(data.shape[0]):
+        # trainy_hat = self.forecast_single_step(trainX[i], \
+        #         trainy[i])['yhat'].reshape(-1).tolist()
+
+        # wandb.log({'predict vs real':data[i][0]}, step=i+start)
+        # wandb.log({'test something' :data[i][0]}, step=i+start)
+        print(i+start)
+        wandb.log({'predict vs real':data[i][0], 'custom step':i+start})
+# tmp = list(range(100))
+# for i in tmp:
+#     wandb.log({'predict vs real':trainy_hat[0]}, step=i)
+    wandb.finish()
+    # exit()
